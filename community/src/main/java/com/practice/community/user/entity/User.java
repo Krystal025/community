@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user")
 public class User {
 
     @Id
@@ -38,7 +37,6 @@ public class User {
     private LocalDate userBirthday;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Status userStatus = Status.ACTIVE;
 
     @Column(updatable = false)
@@ -47,9 +45,11 @@ public class User {
     public enum Gender{
         MALE, FEMALE
     }
+
     public enum Status{
         ACTIVE, INACTIVE
     }
+
     public User(String userName, String userEmail, String userPwd, String userNickname, Gender userGender, LocalDate userBirthday) {
         this.userName = userName;
         this.userEmail = userEmail;
@@ -59,5 +59,14 @@ public class User {
         this.userBirthday = userBirthday;
     }
 
+    public void updateUser(String userEmail, String userPwd, String userNickname){
+        this.userEmail = userEmail;
+        this.userPwd = userPwd;
+        this.userNickname = userNickname;
+    }
+
+    public void deactivateUser() {
+        this.userStatus = Status.INACTIVE;
+    }
 
 }

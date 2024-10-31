@@ -29,6 +29,19 @@ public class UserController {
         return userService.getList();
     }
 
+    // 사용자 정보 수정 API
+    @PutMapping("/update/{userId}")
+    public ResponseEntity<String> updateUser(@PathVariable("userId") Long userId,
+                                             @RequestBody UserDto userDto){
+        System.out.println("Received userId: " + userId);
+        userService.updateUser(userId, userDto);
+        return ResponseEntity.ok("User Information Updated");
+    }
 
-
+    // 사용자 비활성화(탈퇴) API
+    @PutMapping("/delete/{userId}")
+    public ResponseEntity<String> deactivateUser(@PathVariable("userId") Long userId){
+        userService.deactivateUser(userId);
+        return ResponseEntity.ok("User Deleted");
+    }
 }
