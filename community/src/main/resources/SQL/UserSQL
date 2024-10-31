@@ -1,0 +1,19 @@
+-- 회원정보 테이블 --
+CREATE TABLE user(
+	user_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '회원 ID',
+	user_name VARCHAR(50) NOT NULL COMMENT '회원 이름',
+	user_email VARCHAR(100) NOT NULL COMMENT '회원 이메일',
+	user_pwd VARCHAR(128) NOT NULL COMMENT '회원 비밀번호',
+	user_nickname VARCHAR(50) NOT NULL UNIQUE COMMENT '회원 닉네임',
+	user_gender ENUM('MALE', 'FEMALE') DEFAULT 'MALE' COMMENT '회원 성별',
+	user_birthday DATE NOT NULL COMMENT '회원 생년월일',
+	user_status ENUM('ACTIVE', 'INACTIVE') DEFAULT 'ACTIVE' NOT NULL COMMENT '회원 상태',
+	user_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '회원 가입일'
+)COMMENT '회원' ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+
+-- 회원정보 삽입 샘플 --
+INSERT INTO user (user_name, user_email, user_pwd, user_nickname, user_gender, user_birthday)
+VALUES ('사용자1', 'aaa@example.com', '0000', '닉네임', 'FEMALE', '1999-01-01');
+
+
+docker exec -it userhub-mysql mysql -u admin -p
