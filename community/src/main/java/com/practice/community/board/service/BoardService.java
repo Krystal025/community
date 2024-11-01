@@ -8,6 +8,7 @@ import com.practice.community.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,7 +59,7 @@ public class BoardService {
 
     // 게시글 수정
     @Transactional
-    public void updateBoard(Long userId, Long boardId, BoardDto boardDto) {
+    public void updateBoard(Long boardId, Long userId, BoardDto boardDto) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new RuntimeException("Post Not Found"));
         if(!board.getUser().getUserId().equals(userId)){
@@ -66,6 +67,17 @@ public class BoardService {
         }
         board.updateBoard(boardDto.getBoardTitle(),
                 boardDto.getBoardContent());
+    }
+
+    // 게시글 삭제
+    @Transactional
+    public void deleteBoard(Long boardId, Long userId){
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new RuntimeException("Post Not Found"));
+        if(!board.getUser().getUserId().equals(userId)){
+            throw new RuntimeException("Unauthorized User");
+        }
+        boardRepository.delete(board);
     }
 
 }
