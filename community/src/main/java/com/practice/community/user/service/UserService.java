@@ -37,11 +37,11 @@ public class UserService {
 
     // 사용자 목록 조회
     public List<UserDto> getList() {
-        return userRepository.findAll() // DB에서 모든 User 엔티티를 가져와 List<T>로 반환
-                .stream() // List를 stream으로 변환
+        return userRepository.findAll() // DB에서 모든 엔티티(User)를 가져와 List<User>로 반환
+                .stream() // List<User>를 스트림으로 변환
                 .filter(user -> user.getUserStatus() == User.Status.ACTIVE) // 상태가 ACTIVE인 사용자만 필터링
-                .map(UserDto::new) // stream의 각 요소를 변환 (User 객체를 매개변수로 받아 UserDto로 변환)
-                .collect(Collectors.toList()); // stream의 요소를 수집하여 특정 List 컬렉션으로 변환
+                .map(UserDto::new) // 스트림의 각 요소를 변환 (User 객체를 매개변수로 받아 UserDto로 변환)
+                .collect(Collectors.toList()); // 스트림의 요소를 수집하여 List 컬렉션 타입으로 변환
     }
 
     // 사용자 정보 수정

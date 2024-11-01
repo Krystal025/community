@@ -8,6 +8,9 @@ import com.practice.community.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -17,7 +20,7 @@ public class BoardService {
 
     // 게시글 등록
     public void saveBoard(BoardDto boardDto) {
-        User user = userRepository.findById(boardDto.getUserId())
+        User user = userRepository.findByUserIdAndUserStatus(boardDto.getUserId(), "ACTIVE")
                 .orElseThrow(() -> new RuntimeException("User Not Found"));
 
         Board board = new Board(
@@ -26,5 +29,13 @@ public class BoardService {
                 boardDto.getBoardContent()
         );
         boardRepository.save(board);
+    }
+
+    // 게시글 조회
+    public List<BoardDto> getList() {
+        return boardRepository.findAll()
+                    .stream()
+                    .map(BoardDto::new)
+                    .collect(Collectors.toList());
     }
 }

@@ -21,4 +21,8 @@ public class BoardController {
         return ResponseEntity.ok("Post saved");
     }
 
+    @GetMapping("/list")
+    public List<BoardDto> getBoardList(){
+        return boardService.getList();
+    }
 }
