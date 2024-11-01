@@ -28,11 +28,16 @@ public class UserController {
         return userService.getList();
     }
 
+    // 사용자 정보 조회 API
+    @GetMapping("/{userId}")
+    public UserDto getUserInfo(@PathVariable("userId") Long userId){
+        return userService.getUser(userId);
+    }
+
     // 사용자 정보 수정 API
     @PutMapping("/update/{userId}")
     public ResponseEntity<String> updateUser(@PathVariable("userId") Long userId,
                                              @RequestBody UserDto userDto){
-        System.out.println("Received userId: " + userId);
         userService.updateUser(userId, userDto);
         return ResponseEntity.ok("User Information Updated");
     }

@@ -41,7 +41,14 @@ public class UserService {
                 .stream() // List<User>를 스트림으로 변환
                 .filter(user -> user.getUserStatus() == User.Status.ACTIVE) // 상태가 ACTIVE인 사용자만 필터링
                 .map(UserDto::new) // 스트림의 각 요소를 변환 (User 객체를 매개변수로 받아 UserDto로 변환)
-                .collect(Collectors.toList()); // 스트림의 요소를 수집하여 List 컬렉션 타입으로 변환
+                .toList(); // 스트림의 요소를 수집하여 List 컬렉션 타입으로 변환
+    }
+
+    // 사용자 정보 조회
+    public UserDto getUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new RuntimeException("User Not Found"));
+        return new UserDto(user);
     }
 
     // 사용자 정보 수정
