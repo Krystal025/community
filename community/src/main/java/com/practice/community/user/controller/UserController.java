@@ -3,7 +3,6 @@ package com.practice.community.user.controller;
 import com.practice.community.user.dto.UserDto;
 import com.practice.community.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,12 +19,12 @@ public class UserController {
     @PostMapping
     public ResponseEntity<String> saveUser(@RequestBody UserDto userDto) {
         userService.saveUser(userDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User registered");
+        return ResponseEntity.ok("User registered");
     }
 
     // 사용자 목록 조회 API
     @GetMapping("/list")
-    public List<UserDto> getList(){
+    public List<UserDto> getUserList(){
         return userService.getList();
     }
 
