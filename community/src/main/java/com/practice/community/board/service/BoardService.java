@@ -7,6 +7,7 @@ import com.practice.community.user.entity.User;
 import com.practice.community.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,4 +55,17 @@ public class BoardService {
         }
         return new BoardDto(board);
     }
+
+    // 게시글 수정
+    @Transactional
+    public void updateBoard(Long userId, Long boardId, BoardDto boardDto) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new RuntimeException("Post Not Found"));
+        if(!board.getUser().getUserId().equals(userId)){
+            throw new RuntimeException("Unauthorized User");
+        }
+        board.updateBoard(boardDto.getBoardTitle(),
+                boardDto.getBoardContent());
+    }
+
 }

@@ -50,4 +50,10 @@ public class Board {
         this.boardTitle = boardTitle;
         this.boardContent = boardContent;
     }
+
+    public void updateBoard(String boardTitle, String boardContent){
+        this.boardTitle = boardTitle;
+        this.boardContent = boardContent;
+    }
+
 }

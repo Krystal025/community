@@ -34,4 +34,13 @@ public class BoardController {
         return boardService.getBoard(boardId);
     }
 
+    // 게시글 수정 API
+    @PutMapping("/update/{userId}/{boardId}")
+    public ResponseEntity<String> updatePost(@PathVariable("userId") Long userId,
+                                             @PathVariable("boardId") Long boardId,
+                                             @RequestBody BoardDto boardDto) {
+        boardService.updateBoard(userId, boardId, boardDto);
+        return ResponseEntity.ok("Post Updated");
+    }
+
 }
