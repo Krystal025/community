@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,20 +18,17 @@ public class UserService {
 
     // 사용자 등록
     public void saveUser(UserDto userDto){
-        User.Gender userGender;
-        if(userDto.getUserGender() == null){
-            userGender = User.Gender.MALE;
-        }else{
-            userGender = userDto.getUserGender();
-        }
-        User user = new User(
-                userDto.getUserName(),
-                userDto.getUserEmail(),
-                userDto.getUserPwd(),
-                userDto.getUserNickname(),
-                userGender,
-                userDto.getUserBirthday()
-        );
+        //User.Gender userGender
+        //        = (userDto.getUserGender() != null) ? userDto.getUserGender() : User.Gender.MALE;
+        // DTO를 엔티티로 변환하여 DB에 저장함
+        User user = User.builder()
+                .userName(userDto.getUserName())
+                .userEmail(userDto.getUserEmail())
+                .userPwd(userDto.getUserPwd())
+                .userNickname(userDto.getUserNickname())
+                .userGender(userDto.getUserGender())
+                .userBirthday(userDto.getUserBirthday())
+                .build();
         userRepository.save(user);
     }
 
@@ -56,9 +53,12 @@ public class UserService {
     public void updateUser(Long userId, UserDto userDto) {
         User user = userRepository.findById(userId) // 영속성 컨텍스트에 사용자가 존재하는지 확인
                 .orElseThrow(() -> new RuntimeException("User Not Found")); // 사용자 Id가 없으면 에러 처리
-        user.updateUser(userDto.getUserEmail(), // 영속성 컨텍스트를 통해
-                userDto.getUserPwd(),
-                userDto.getUserNickname());
+        User updatedUser = user.toBuilder() // build()가 아닌 toBuilder()를 통해 일부 필드만 변경 가능
+                .userEmail(userDto.getUserEmail())
+                .userPwd(userDto.getUserPwd())
+                .userNickname(userDto.getUserNickname())
+                .build();
+        userRepository.save(updatedUser);
     }
 
     // 사용자 비활성화(탈퇴)
@@ -66,7 +66,10 @@ public class UserService {
     public void deactivateUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User Not Found"));
-        user.deactivateUser();
+        User deactivateUser = user.toBuilder()
+                .userStatus(User.Status.INACTIVE) // 상태 변경
+                .build();
+        userRepository.save(deactivateUser);
     }
 
 }

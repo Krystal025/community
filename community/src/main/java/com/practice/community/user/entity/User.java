@@ -2,6 +2,7 @@ package com.practice.community.user.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true) // 기존 인스턴스를 복사하여 새로운 인스턴스를 만들고, 일부 필드만 변경할 수 있도록 함를
 public class User {
 
     @Id
@@ -31,16 +33,16 @@ public class User {
     private String userNickname;
 
     @Enumerated(EnumType.STRING)
-    private Gender userGender = Gender.MALE;
+    private Gender userGender;
 
     @Column(nullable = false)
     private LocalDate userBirthday;
 
     @Enumerated(EnumType.STRING)
-    private Status userStatus = Status.ACTIVE;
+    private Status userStatus;
 
     @Column(updatable = false)
-    private LocalDateTime userCreatedAt = LocalDateTime.now();
+    private LocalDateTime userCreatedAt;
 
     public enum Gender{
         MALE, FEMALE
@@ -50,23 +52,34 @@ public class User {
         ACTIVE, INACTIVE
     }
 
-    public User(String userName, String userEmail, String userPwd, String userNickname, Gender userGender, LocalDate userBirthday) {
-        this.userName = userName;
-        this.userEmail = userEmail;
-        this.userPwd = userPwd;
-        this.userNickname = userNickname;
-        this.userGender = userGender;
-        this.userBirthday = userBirthday;
+    @PrePersist // 처음 생성되는 엔티티가 DB에 저장되기 전에 호출됨
+    private void onCreate() {
+        if (this.userGender == null) {
+            this.userGender = Gender.MALE;
+        }
+        if (this.userStatus == null) {
+            this.userStatus = Status.ACTIVE;
+        }
+        this.userCreatedAt = LocalDateTime.now();
     }
 
-    public void updateUser(String userEmail, String userPwd, String userNickname){
-        this.userEmail = userEmail;
-        this.userPwd = userPwd;
-        this.userNickname = userNickname;
-    }
+//    public User(String userName, String userEmail, String userPwd, String userNickname, Gender userGender, LocalDate userBirthday) {
+//        this.userName = userName;
+//        this.userEmail = userEmail;
+//        this.userPwd = userPwd;
+//        this.userNickname = userNickname;
+//        this.userGender = userGender;
+//        this.userBirthday = userBirthday;
+//    }
 
-    public void deactivateUser() {
-        this.userStatus = Status.INACTIVE;
-    }
+//    public void updateUser(String userEmail, String userPwd, String userNickname){
+//        this.userEmail = userEmail;
+//        this.userPwd = userPwd;
+//        this.userNickname = userNickname;
+//    }
+
+//    public void deactivateUser() {
+//        this.userStatus = Status.INACTIVE;
+//    }
 
 }

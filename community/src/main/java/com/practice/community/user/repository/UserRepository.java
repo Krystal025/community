@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     // 사용자 ID와 상태값을 기준으로 조회 (Optional : 단일 객체로 반환하며 객체가 없을 경우 Optional로 감싸서 반환)
-    Optional<User> findByUserIdAndUserStatus(Long userId, String userStatus);
+    Optional<User> findByUserIdAndUserStatus(Long userId, User.Status userStatus);
     // 사용자 상태값을 기준으로 조회 (List : 여러 객체를 반환하며 객체가 없을 경우 빈 리스트로 반환)
     List<User> findByUserStatus(User.Status userStatus);
 }

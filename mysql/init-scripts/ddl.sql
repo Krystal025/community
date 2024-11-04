@@ -19,5 +19,10 @@ CREATE TABLE board (
     board_content MEDIUMTEXT NOT NULL COMMENT '게시글 내용',
     board_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '게시글 작성일',
     board_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '게시글 수정일',
-    FOREIGN KEY (user_id) REFERENCES user(user_id),
 ) COMMENT '게시판' ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+
+-- 게시글 테이블 FK 설정 --
+ALTER TABLE board
+ADD CONSTRAINT fk_user
+FOREIGN KEY (user_id) REFERENCES user(user_id)
+ON DELETE CASCADE;

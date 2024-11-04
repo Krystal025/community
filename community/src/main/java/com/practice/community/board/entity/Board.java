@@ -3,6 +3,7 @@ package com.practice.community.board.entity;
 import com.practice.community.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,14 +13,15 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long boardId;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY) // 지연로딩으로 데이터가 필요할 때까지 로딩하지 않음
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY) // 지연로딩으로 데이터가 필요할 때까지 로딩하지 않음
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(nullable = false, length = 100)
@@ -31,14 +33,12 @@ public class Board {
     @Column(updatable = false)
     private LocalDateTime boardCreatedAt;
 
-    //    UserId 값 저장
-//    @Column(updatable = false)
-//    private Long boardCreatedBy;
-
     @Column
     private LocalDateTime boardUpdatedAt;
 
-    //    UserId 값 저장
+//    @Column(updatable = false)
+//    private Long boardCreatedBy;
+
 //    @Column(updatable = false)
 //    private Long boardUpdatedBy;
 
@@ -53,15 +53,15 @@ public class Board {
         this.boardUpdatedAt = LocalDateTime.now();
     }
 
-    public Board(User user, String boardTitle, String boardContent){
-        this.user = user;
-        this.boardTitle = boardTitle;
-        this.boardContent = boardContent;
-    }
-
-    public void updateBoard(String boardTitle, String boardContent){
-        this.boardTitle = boardTitle;
-        this.boardContent = boardContent;
-    }
+//    public Board(User user, String boardTitle, String boardContent){
+//        this.user = user;
+//        this.boardTitle = boardTitle;
+//        this.boardContent = boardContent;
+//    }
+//
+//    public void updateBoard(String boardTitle, String boardContent){
+//        this.boardTitle = boardTitle;
+//        this.boardContent = boardContent;
+//    }
 
 }

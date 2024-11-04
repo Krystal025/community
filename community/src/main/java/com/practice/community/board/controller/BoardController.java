@@ -39,7 +39,7 @@ public class BoardController {
     public ResponseEntity<String> updatePost(@PathVariable("boardId") Long boardId,
                                              @PathVariable("userId") Long userId,
                                              @RequestBody BoardDto boardDto) {
-        boardService.updateBoard(userId, boardId, boardDto);
+        boardService.updateBoard(boardId, userId, boardDto);
         return ResponseEntity.ok("Post Updated");
     }
 
