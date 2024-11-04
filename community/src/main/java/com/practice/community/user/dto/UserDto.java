@@ -1,8 +1,8 @@
 package com.practice.community.user.dto;
 
 import com.practice.community.user.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.practice.community.user.enums.Gender;
+import com.practice.community.user.enums.Status;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,9 +18,9 @@ public class UserDto {
     private String userEmail;
     private String userPwd;
     private String userNickname;
-    private User.Gender userGender;
+    private Gender userGender;
     private LocalDate userBirthday;
-    private User.Status userStatus;
+    private Status userStatus;
     private LocalDateTime userCreatedAt;
 
     // User 엔티티를 매개변수로 받는 생성자

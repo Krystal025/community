@@ -2,6 +2,7 @@ package com.practice.community.user.service;
 
 import com.practice.community.user.dto.UserDto;
 import com.practice.community.user.entity.User;
+import com.practice.community.user.enums.Status;
 import com.practice.community.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class UserService {
     public List<UserDto> getList() {
         return userRepository.findAll() // DB에서 모든 엔티티(User)를 가져와 List<User>로 반환
                 .stream() // List<User>를 스트림으로 변환
-                .filter(user -> user.getUserStatus() == User.Status.ACTIVE) // 상태가 ACTIVE인 사용자만 필터링
+                .filter(user -> user.getUserStatus() == Status.ACTIVE) // 상태가 ACTIVE인 사용자만 필터링
                 .map(UserDto::new) // 스트림의 각 요소를 변환 (User 객체를 매개변수로 받아 UserDto로 변환)
                 .toList(); // 스트림의 요소를 수집하여 List 컬렉션 타입으로 변환
     }
@@ -67,7 +68,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User Not Found"));
         User deactivateUser = user.toBuilder()
-                .userStatus(User.Status.INACTIVE) // 상태 변경
+                .userStatus(Status.INACTIVE) // 상태 변경
                 .build();
         userRepository.save(deactivateUser);
     }

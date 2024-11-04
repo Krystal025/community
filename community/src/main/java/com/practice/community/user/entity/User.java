@@ -1,5 +1,7 @@
 package com.practice.community.user.entity;
 
+import com.practice.community.user.enums.Gender;
+import com.practice.community.user.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,14 +46,6 @@ public class User {
     @Column(updatable = false)
     private LocalDateTime userCreatedAt;
 
-    public enum Gender{
-        MALE, FEMALE
-    }
-
-    public enum Status{
-        ACTIVE, INACTIVE
-    }
-
     @PrePersist // 처음 생성되는 엔티티가 DB에 저장되기 전에 호출됨
     private void onCreate() {
         if (this.userGender == null) {
@@ -62,6 +56,15 @@ public class User {
         }
         this.userCreatedAt = LocalDateTime.now();
     }
+
+//    public enum Gender{
+//        MALE, FEMALE
+//    }
+//
+//    public enum Status{
+//        ACTIVE, INACTIVE
+//    }
+
 
 //    public User(String userName, String userEmail, String userPwd, String userNickname, Gender userGender, LocalDate userBirthday) {
 //        this.userName = userName;
