@@ -31,8 +31,16 @@ public class Board {
     @Column(updatable = false)
     private LocalDateTime boardCreatedAt;
 
+    //    UserId 값 저장
+//    @Column(updatable = false)
+//    private Long boardCreatedBy;
+
     @Column
     private LocalDateTime boardUpdatedAt;
+
+    //    UserId 값 저장
+//    @Column(updatable = false)
+//    private Long boardUpdatedBy;
 
     @PrePersist // 처음 생성되는 엔티티가 DB에 저장되기 전에 호출됨
     private void onCreate() {

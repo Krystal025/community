@@ -6,6 +6,7 @@ services:
     image: mysql:8.0.37
     volumes:
       - ./db:/var/lib/mysql
+      - ./mysql/init-scripts:/docker-entrypoint-initdb.d # docker-compose 실행시 ddl 구문 실행
     ports:
       - "3308:3306"
     environment:
