@@ -61,7 +61,6 @@ public class BoardService {
     // 게시글 수정
     @Transactional
     public void updateBoard(Long boardId, Long userId, BoardDto boardDto) {
-        System.out.println("boardId: " + boardId + ", userId: " + userId); // 로그 추가
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new RuntimeException("Post Not Found"));
         if(!board.getUser().getUserId().equals(userId)){

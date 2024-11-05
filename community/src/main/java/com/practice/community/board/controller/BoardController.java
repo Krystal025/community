@@ -2,6 +2,7 @@ package com.practice.community.board.controller;
 
 import com.practice.community.board.dto.BoardDto;
 import com.practice.community.board.service.BoardService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class BoardController {
 
     // 게시글 등록 API
     @PostMapping
-    public ResponseEntity<String> saveBoard(@RequestBody BoardDto boardDto){
+    public ResponseEntity<String> saveBoard(@Valid @RequestBody BoardDto boardDto){
         boardService.saveBoard(boardDto);
         return ResponseEntity.ok("Post saved");
     }
@@ -38,7 +39,7 @@ public class BoardController {
     @PutMapping("/update/{boardId}/{userId}")
     public ResponseEntity<String> updatePost(@PathVariable("boardId") Long boardId,
                                              @PathVariable("userId") Long userId,
-                                             @RequestBody BoardDto boardDto) {
+                                             @Valid @RequestBody BoardDto boardDto) {
         boardService.updateBoard(boardId, userId, boardDto);
         return ResponseEntity.ok("Post Updated");
     }

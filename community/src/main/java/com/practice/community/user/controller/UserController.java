@@ -2,6 +2,7 @@ package com.practice.community.user.controller;
 
 import com.practice.community.user.dto.UserDto;
 import com.practice.community.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class UserController {
 
     // 사용자 등록 API
     @PostMapping
-    public ResponseEntity<String> saveUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<String> saveUser(@Valid @RequestBody UserDto userDto) {
         userService.saveUser(userDto);
         return ResponseEntity.ok("User registered");
     }
@@ -37,7 +38,7 @@ public class UserController {
     // 사용자 정보 수정 API
     @PutMapping("/update/{userId}")
     public ResponseEntity<String> updateUser(@PathVariable("userId") Long userId,
-                                             @RequestBody UserDto userDto){
+                                             @Valid @RequestBody UserDto userDto){
         userService.updateUser(userId, userDto);
         return ResponseEntity.ok("User Information Updated");
     }

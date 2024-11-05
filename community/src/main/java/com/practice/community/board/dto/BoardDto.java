@@ -1,6 +1,8 @@
 package com.practice.community.board.dto;
 
 import com.practice.community.board.entity.Board;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,9 +15,17 @@ import java.time.LocalDateTime;
 public class BoardDto {
 
     private Long boardId;
+
     private Long userId;
+
+    @NotBlank(message = "Title must not be blank")
     private String boardTitle;
+
+    @NotBlank(message = "Title must not be blank")
+
+    @NotBlank(message = "Content must not be blank")
     private String boardContent;
+
     private LocalDateTime boardCreatedAt;
     private LocalDateTime boardUpdatedAt;
 

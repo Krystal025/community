@@ -49,7 +49,7 @@ public class User {
     @PrePersist // 처음 생성되는 엔티티가 DB에 저장되기 전에 호출됨
     private void onCreate() {
         if (this.userGender == null) {
-            this.userGender = Gender.MALE;
+            this.userGender = Gender.MALE; // 기본값 설정을 통해 무결성 보장
         }
         if (this.userStatus == null) {
             this.userStatus = Status.ACTIVE;
@@ -64,7 +64,6 @@ public class User {
 //    public enum Status{
 //        ACTIVE, INACTIVE
 //    }
-
 
 //    public User(String userName, String userEmail, String userPwd, String userNickname, Gender userGender, LocalDate userBirthday) {
 //        this.userName = userName;
