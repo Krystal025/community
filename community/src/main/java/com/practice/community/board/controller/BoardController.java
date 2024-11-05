@@ -1,6 +1,8 @@
 package com.practice.community.board.controller;
 
 import com.practice.community.board.dto.BoardDto;
+import com.practice.community.board.dto.BoardRequestDto;
+import com.practice.community.board.dto.BoardResponseDto;
 import com.practice.community.board.service.BoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,21 +19,22 @@ public class BoardController {
     private final BoardService boardService;
 
     // 게시글 등록 API
-    @PostMapping
-    public ResponseEntity<String> saveBoard(@Valid @RequestBody BoardDto boardDto){
-        boardService.saveBoard(boardDto);
+    @PostMapping("/{userId}")
+    public ResponseEntity<String> saveBoard(@PathVariable("userId") Long userId,
+                                            @Valid @RequestBody BoardRequestDto boardRequestDto){
+        boardService.saveBoard(userId, boardRequestDto);
         return ResponseEntity.ok("Post saved");
     }
 
     // 게시글 목록 조회 API
     @GetMapping("/list")
-    public List<BoardDto> getBoardList(){
+    public List<BoardResponseDto> getBoardList(){
         return boardService.getList();
     }
 
     // 게시글 상세내용 조회 API
     @GetMapping("{boardId}")
-    public BoardDto getBoardInfo(@PathVariable("boardId") Long boardId){
+    public BoardResponseDto getBoardInfo(@PathVariable("boardId") Long boardId){
         return boardService.getBoard(boardId);
     }
 
@@ -39,8 +42,8 @@ public class BoardController {
     @PutMapping("/update/{boardId}/{userId}")
     public ResponseEntity<String> updatePost(@PathVariable("boardId") Long boardId,
                                              @PathVariable("userId") Long userId,
-                                             @Valid @RequestBody BoardDto boardDto) {
-        boardService.updateBoard(boardId, userId, boardDto);
+                                             @Valid @RequestBody BoardRequestDto boardRequestDto) {
+        boardService.updateBoard(boardId, userId, boardRequestDto);
         return ResponseEntity.ok("Post Updated");
     }
 

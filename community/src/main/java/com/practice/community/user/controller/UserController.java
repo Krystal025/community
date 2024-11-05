@@ -1,6 +1,7 @@
 package com.practice.community.user.controller;
 
-import com.practice.community.user.dto.UserDto;
+import com.practice.community.user.dto.UserRequestDto;
+import com.practice.community.user.dto.UserResponseDto;
 import com.practice.community.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,28 +19,28 @@ public class UserController {
 
     // 사용자 등록 API
     @PostMapping
-    public ResponseEntity<String> saveUser(@Valid @RequestBody UserDto userDto) {
-        userService.saveUser(userDto);
+    public ResponseEntity<String> saveUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+        userService.saveUser(userRequestDto);
         return ResponseEntity.ok("User registered");
     }
 
     // 사용자 목록 조회 API
     @GetMapping("/list")
-    public List<UserDto> getUserList(){
+    public List<UserResponseDto> getUserList(){
         return userService.getList();
     }
 
     // 사용자 정보 조회 API
     @GetMapping("/{userId}")
-    public UserDto getUserInfo(@PathVariable("userId") Long userId){
+    public UserResponseDto getUserInfo(@PathVariable("userId") Long userId){
         return userService.getUser(userId);
     }
 
     // 사용자 정보 수정 API
     @PutMapping("/update/{userId}")
     public ResponseEntity<String> updateUser(@PathVariable("userId") Long userId,
-                                             @Valid @RequestBody UserDto userDto){
-        userService.updateUser(userId, userDto);
+                                             @Valid @RequestBody UserRequestDto userRequestDto){
+        userService.updateUser(userId, userRequestDto);
         return ResponseEntity.ok("User Information Updated");
     }
 
