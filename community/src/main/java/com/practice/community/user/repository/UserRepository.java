@@ -14,4 +14,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUserIdAndUserStatus(Long userId, Status userStatus);
     // 사용자 상태값을 기준으로 조회 (List : 여러 객체를 반환하며 객체가 없을 경우 빈 리스트로 반환)
     List<User> findByUserStatus(Status userStatus);
+    // 존재하는 이메일인지 확인
+    boolean existsByUserEmail(String userEmail);
+    // 존재하는 닉네임인지 확인
+    boolean existsByUserNickname(String userNickname);
+
 }

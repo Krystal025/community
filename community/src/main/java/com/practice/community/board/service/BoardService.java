@@ -1,21 +1,23 @@
 package com.practice.community.board.service;
 
-import com.practice.community.board.dto.BoardDto;
 import com.practice.community.board.dto.BoardRequestDto;
 import com.practice.community.board.dto.BoardResponseDto;
 import com.practice.community.board.entity.Board;
 import com.practice.community.board.repository.BoardRepository;
+import com.practice.community.exception.ErrorCode;
+import com.practice.community.exception.custom.RequiredFieldMissingException;
+import com.practice.community.exception.custom.PostNotFoundException;
+import com.practice.community.exception.custom.UnauthorizedAccessException;
+import com.practice.community.exception.custom.UserNotFoundException;
 import com.practice.community.user.entity.User;
 import com.practice.community.user.enums.Status;
 import com.practice.community.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +29,12 @@ public class BoardService {
     // 게시글 등록
     public void saveBoard(Long userId, BoardRequestDto boardRequestDto) {
         User user = userRepository.findByUserIdAndUserStatus(userId, Status.ACTIVE)
-                .orElseThrow(() -> new RuntimeException("User Not Found"));
+                .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
         Board board = Board.builder()
-                        .user(user)
-                        .boardTitle(boardRequestDto.getBoardTitle())
-                        .boardContent(boardRequestDto.getBoardContent())
-                        .build();
+                .user(user)
+                .boardTitle(boardRequestDto.getBoardTitle())
+                .boardContent(boardRequestDto.getBoardContent())
+                .build();
         boardRepository.save(board);
     }
 
@@ -52,10 +54,11 @@ public class BoardService {
     // 게시글 상세내용 조회
     public BoardResponseDto getBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new RuntimeException("Post Not Found"));
+                .orElseThrow(() -> new PostNotFoundException(ErrorCode.POST_NOT_FOUND));
         User user = board.getUser();
+        // 상태가 ACTIVE인 사용자의 게시글만 조회 가능
         if(user.getUserStatus() == Status.INACTIVE){
-            throw new RuntimeException("Deactivated User");
+            throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
         }
         return new BoardResponseDto(board);
     }
@@ -64,9 +67,15 @@ public class BoardService {
     @Transactional
     public void updateBoard(Long boardId, Long userId, BoardRequestDto boardRequestDto) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new RuntimeException("Post Not Found"));
+                .orElseThrow(() -> new PostNotFoundException(ErrorCode.POST_NOT_FOUND));
+        // 게시글 수정 권한 확인
         if(!board.getUser().getUserId().equals(userId)){
-            throw new RuntimeException("Unauthorized User");
+            throw new UnauthorizedAccessException(ErrorCode.UNAUTHORIZED_ACCESS);
+        }
+        // 제목 또는 내용에 빈 값이 없는지 확인
+        if (boardRequestDto.getBoardTitle() == null || boardRequestDto.getBoardTitle().isEmpty() ||
+                boardRequestDto.getBoardContent() == null || boardRequestDto.getBoardContent().isEmpty()) {
+            throw new RequiredFieldMissingException(ErrorCode.REQUIRED_FIELD_MISSING);
         }
         Board updatedBoard = board.toBuilder()
                 .boardTitle(boardRequestDto.getBoardTitle())
@@ -79,9 +88,9 @@ public class BoardService {
     @Transactional
     public void deleteBoard(Long boardId, Long userId){
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new RuntimeException("Post Not Found"));
+                .orElseThrow(() -> new PostNotFoundException(ErrorCode.POST_NOT_FOUND));
         if(!board.getUser().getUserId().equals(userId)){
-            throw new RuntimeException("Unauthorized User");
+            throw new UnauthorizedAccessException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
         boardRepository.delete(board);
     }
