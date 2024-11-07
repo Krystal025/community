@@ -11,6 +11,7 @@ import com.practice.community.user.enums.Status;
 import com.practice.community.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,14 +22,20 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     // 사용자 등록
     public void saveUser(UserRequestDto userRequestDto){
+        System.out.println("Received password: " + userRequestDto.getUserPwd());
+        // 비밀번호가 null인지 확인
+        if (userRequestDto.getUserPwd() == null || userRequestDto.getUserPwd().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be null or empty");
+        }
         try{ // DTO를 엔티티로 변환하여 DB에 저장함
             User user = User.builder()
                     .userName(userRequestDto.getUserName())
                     .userEmail(userRequestDto.getUserEmail())
-                    .userPwd(userRequestDto.getUserPwd())
+                    .userPwd(passwordEncoder.encode(userRequestDto.getUserPwd()))
                     .userNickname(userRequestDto.getUserNickname())
                     .userGender(userRequestDto.getUserGender())
                     .userBirthday(userRequestDto.getUserBirthday())

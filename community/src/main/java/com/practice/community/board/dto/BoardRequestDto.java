@@ -17,10 +17,4 @@ public class BoardRequestDto {
     @NotBlank(message = "Content must not be blank")
     private String boardContent;
 
-    public BoardRequestDto(Board board){
-        this.userId = board.getUser().getUserId();
-        this.boardTitle = board.getBoardTitle();
-        this.boardContent = board.getBoardContent();
-    }
-
 }

@@ -1,6 +1,7 @@
 package com.practice.community.user.entity;
 
 import com.practice.community.user.enums.Gender;
+import com.practice.community.user.enums.Role;
 import com.practice.community.user.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -46,6 +47,9 @@ public class User {
     @Column(updatable = false)
     private LocalDateTime userCreatedAt;
 
+    @Enumerated(EnumType.STRING)
+    private Role userRole;
+
     @PrePersist // 처음 생성되는 엔티티가 DB에 저장되기 전에 호출됨
     private void onCreate() {
         if (this.userGender == null) {
@@ -54,34 +58,10 @@ public class User {
         if (this.userStatus == null) {
             this.userStatus = Status.ACTIVE;
         }
+        if (this.userRole == null) {
+            this.userRole = Role.ROLE_USER;
+        }
         this.userCreatedAt = LocalDateTime.now();
     }
-
-//    public enum Gender{
-//        MALE, FEMALE
-//    }
-//
-//    public enum Status{
-//        ACTIVE, INACTIVE
-//    }
-
-//    public User(String userName, String userEmail, String userPwd, String userNickname, Gender userGender, LocalDate userBirthday) {
-//        this.userName = userName;
-//        this.userEmail = userEmail;
-//        this.userPwd = userPwd;
-//        this.userNickname = userNickname;
-//        this.userGender = userGender;
-//        this.userBirthday = userBirthday;
-//    }
-
-//    public void updateUser(String userEmail, String userPwd, String userNickname){
-//        this.userEmail = userEmail;
-//        this.userPwd = userPwd;
-//        this.userNickname = userNickname;
-//    }
-
-//    public void deactivateUser() {
-//        this.userStatus = Status.INACTIVE;
-//    }
 
 }

@@ -1,6 +1,5 @@
 package com.practice.community.board.controller;
 
-import com.practice.community.board.dto.BoardDto;
 import com.practice.community.board.dto.BoardRequestDto;
 import com.practice.community.board.dto.BoardResponseDto;
 import com.practice.community.board.service.BoardService;
