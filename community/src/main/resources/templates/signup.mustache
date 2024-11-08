@@ -43,8 +43,9 @@
         .then(response => response.json())
         .then(data => {
             console.log('Success:', data);
-            window.location.href = '/login'; // 로그인 페이지로 리다이렉트
-        })
+            if (data.redirect) {
+                window.location.href = data.redirect; // 서버에서 받은 리다이렉트 URL로 이동
+            }        })
         .catch((error) => {
             console.error('Error:', error);
         });

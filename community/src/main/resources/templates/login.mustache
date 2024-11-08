@@ -14,5 +14,40 @@
         <input id="password" type="password" name="password" placeholder="password"/>
         <input type="submit" value="login"/>
     </form>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // 기본 폼 제출 동작 방지
+
+        const formData = new FormData(event.target);
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+
+        fetch('/loginProc', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Login success:', data);
+
+            // 로그인 성공 후 역할에 따라 리다이렉트
+            if (data.role === 'ROLE_ADMIN') { // ROLE_ADMIN인 경우 /admin 페이지로 리다이렉트
+                window.location.href = '/admin';
+            } else if (data.role === 'ROLE_USER') { // ROLE_USER인 경우 /main 페이지로 리다이렉트
+                window.location.href = '/main';
+            } else {
+                window.location.href = '/'; // 다른 경우 홈 페이지로
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    });
+    </script>
 </body>
 </html>
