@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -30,9 +31,17 @@ public class SecurityConfig {
                         .loginProcessingUrl("/loginProc") // 로그인 요청을 처리할 URL
                         .permitAll() // 로그인 페이지와 로그인 처리 URL을 모든 사용자에게 열어줌
                 );
+//        http
+//                .csrf((auth)-> auth.disable());
         http
-                .csrf((auth)-> auth.disable());
-
+                .sessionManagement((auth)-> auth
+                        .maximumSessions(1) // 하나의 계정에 대한 다중 로그인 허용 개수 (1 : 동시 로그인 방지)
+                        .maxSessionsPreventsLogin(true)); // 최대 세션수 초과시 새 로그인 시도 차단 (false : 기존 세션 삭제)
+        http  // 세션 고정 보호 설정
+                .sessionManagement((session)-> session
+                        .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::changeSessionId
+                        )
+                );
         return http.build();
     }
 
