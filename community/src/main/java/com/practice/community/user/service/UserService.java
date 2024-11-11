@@ -58,7 +58,16 @@ public class UserService {
         return userRepository.findAll() // DB에서 모든 엔티티(User)를 가져와 List<User>로 반환
                 .stream() // List<User>를 스트림으로 변환
                 .filter(user -> user.getUserStatus() == Status.ACTIVE) // 상태가 ACTIVE인 사용자만 필터링
-                .map(UserResponseDto::new) // 스트림의 각 요소를 변환 (User 객체를 매개변수로 받아 UserDto로 변환)
+                .map(user -> UserResponseDto.builder() // 스트림의 각 요소를 변환 (User 객체를 매개변수로 받아 UserDto로 변환)
+                        .userId(user.getUserId())
+                        .userName(user.getUserName())
+                        .userEmail(user.getUserEmail())
+                        .userNickname(user.getUserNickname())
+                        .userGender(user.getUserGender())
+                        .userBirthday(user.getUserBirthday())
+                        .userStatus(user.getUserStatus())
+                        .userCreatedAt(user.getUserCreatedAt())
+                        .build())
                 .toList(); // 스트림의 요소를 수집하여 List 컬렉션 타입으로 변환
     }
 
@@ -66,7 +75,15 @@ public class UserService {
     public UserResponseDto getUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
-        return new UserResponseDto(user);
+        return UserResponseDto.builder()
+                .userId(user.getUserId())
+                .userName(user.getUserName())
+                .userEmail(user.getUserEmail())
+                .userNickname(user.getUserNickname())
+                .userGender(user.getUserGender())
+                .userBirthday(user.getUserBirthday())
+                .userCreatedAt(user.getUserCreatedAt())
+                .build();
     }
 
     // 사용자 정보 수정

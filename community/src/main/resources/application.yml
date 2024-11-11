@@ -11,9 +11,12 @@ spring:
     properties:
       hibernate:
         format_sql: true # SQL을 보여줄때 포맷형식으로 보여줌
+  mustache:
+    servlet:
+      expose-request-attributes: true
 
 server:
   port: 8080
   servlet:
     session:
-      timeout: 90m # 세션 타임아웃 시간 설정
+      timeout: 30m # 세션 타임아웃 시간 설정

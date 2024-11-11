@@ -1,13 +1,13 @@
 package com.practice.community.board.dto;
 
 import com.practice.community.board.entity.Board;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
+@Builder
 public class BoardResponseDto {
 
     private Long boardId;

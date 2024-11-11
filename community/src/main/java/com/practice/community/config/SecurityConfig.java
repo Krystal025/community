@@ -2,6 +2,9 @@ package com.practice.community.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
@@ -17,6 +20,14 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+//    @Bean
+//    public RoleHierarchy roleHierarchy() {
+//        RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
+//        hierarchy.setHierarchy("ROLE_C > ROLE_B\n" +
+//                "ROLE_B > ROLE_A");
+//        return hierarchy;
+//    }
+
     @Bean // 메서드의 반환값을 스프링 빈 객체로 등록
     public SecurityFilterChain configure(HttpSecurity http) throws Exception{
         http
@@ -31,8 +42,12 @@ public class SecurityConfig {
                         .loginProcessingUrl("/loginProc") // 로그인 요청을 처리할 URL
                         .permitAll() // 로그인 페이지와 로그인 처리 URL을 모든 사용자에게 열어줌
                 );
+
+//        http
+//                .httpBasic(Customizer.withDefaults());
 //        http
 //                .csrf((auth)-> auth.disable());
+
         http
                 .sessionManagement((auth)-> auth
                         .maximumSessions(1) // 하나의 계정에 대한 다중 로그인 허용 개수 (1 : 동시 로그인 방지)

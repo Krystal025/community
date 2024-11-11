@@ -47,7 +47,14 @@ public class BoardService {
         // 게시글을 DTO로 변환하여 반환
         return boards
                 .stream()
-                .map(BoardResponseDto::new)
+                .map(board -> BoardResponseDto.builder()
+                        .boardId(board.getBoardId())
+                        .boardTitle(board.getBoardTitle())
+                        .boardContent(board.getBoardContent())
+                        .boardCreatedAt(board.getBoardCreatedAt())
+                        .boardUpdatedAt(board.getBoardUpdatedAt())
+                        .userId(board.getUser().getUserId())
+                        .build())
                 .toList();
     }
 
@@ -60,7 +67,14 @@ public class BoardService {
         if(user.getUserStatus() == Status.INACTIVE){
             throw new UserNotFoundException(ErrorCode.USER_NOT_FOUND);
         }
-        return new BoardResponseDto(board);
+        return BoardResponseDto.builder()
+                .boardId(board.getBoardId())
+                .boardTitle(board.getBoardTitle())
+                .boardContent(board.getBoardContent())
+                .boardCreatedAt(board.getBoardCreatedAt())
+                .boardUpdatedAt(board.getBoardUpdatedAt())
+                .userId(user.getUserId())
+                .build();
     }
 
     // 게시글 수정
