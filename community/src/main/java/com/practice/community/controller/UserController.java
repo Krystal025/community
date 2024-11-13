@@ -1,4 +1,4 @@
-package com.practice.community.user.controller;
+package com.practice.community.controller;
 
 import com.practice.community.user.dto.UserRequestDto;
 import com.practice.community.user.dto.UserResponseDto;
@@ -17,13 +17,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-
-    // 사용자 등록 API
-    @PostMapping
-    public ResponseEntity<String> saveUser(@Valid @RequestBody UserRequestDto userRequestDto) {
-        userService.saveUser(userRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User registered"); // 201 Created
-    }
 
     // 사용자 목록 조회 API
     @GetMapping("/list")

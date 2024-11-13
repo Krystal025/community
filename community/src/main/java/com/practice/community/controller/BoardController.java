@@ -1,4 +1,4 @@
-package com.practice.community.board.controller;
+package com.practice.community.controller;
 
 import com.practice.community.board.dto.BoardRequestDto;
 import com.practice.community.board.dto.BoardResponseDto;

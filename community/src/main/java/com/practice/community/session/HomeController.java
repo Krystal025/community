@@ -1,4 +1,4 @@
-package com.practice.community.test;
+package com.practice.community.session;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,10 +11,10 @@ import java.util.Collection;
 import java.util.Iterator;
 
 @Controller
-public class MainController {
+public class HomeController {
 
-    @GetMapping("/")
-    public String mainPage(Model model){
+    @GetMapping("/home")
+    public String homePage(Model model){
 
         // 현재 인증된(로그인된) 사용자의 이름
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -32,7 +32,7 @@ public class MainController {
         String role = auth.getAuthority();
         model.addAttribute("role",role);
 
-        return "main";
+        return "home";
     }
 
 }

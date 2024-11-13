@@ -4,10 +4,10 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>SignUp Page</title>
+    <title>Join Page</title>
 </head>
 <body>
-<form id="signupForm" name="signupForm">
+<form id="joinForm" name="joinForm">
     <input type="text" name="userName" placeholder="Name"/>
     <input type="email" name="userEmail" placeholder="Email"/>
     <input type="password" name="userPwd" placeholder="Password"/>
@@ -17,7 +17,7 @@
         <option value="FEMALE">Female</option>
     </select>
     <input type="date" name="userBirthday"/>
-    <input type="submit" value="SignUp"/>
+    <input type="submit" value="join"/>
 </form>
 
 <script>
@@ -33,7 +33,7 @@
         });
 
         // JSON으로 변환하여 AJAX 요청 보내기
-        fetch('/signupProc', {
+        fetch('/joinProc', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json', // 서버에 JSON 형식으로 전송
