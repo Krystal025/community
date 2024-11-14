@@ -1,6 +1,7 @@
 package com.practice.community.config;
 
-import com.practice.community.filter.LoginFilter;
+import com.practice.community.filter.JwtAuthorizationFilter;
+import com.practice.community.filter.LoginAuthenticationFilter;
 import com.practice.community.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -46,8 +47,10 @@ public class SecurityConfig {
                         .requestMatchers("/", "/login", "/auth/**").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated())
-                // 필터를 Bean으로 등록
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                // 로그인 인증 필터 (최초 로그인 또는 토큰 만료시 이메일과 비밀번호로 인증 처리)
+                .addFilterBefore(new LoginAuthenticationFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                // 모든 요청에 대해 JWT 토큰이 유효한지 검증 (이미 로그인을 해서 토큰을 가지고 있을 때 해당 토큰의 유효성을 검사)
+                .addFilterAfter(new JwtAuthorizationFilter(jwtTokenProvider), LoginAuthenticationFilter.class)
                 // 세션 정책을 Stateless로 설정하여 서버가 세션을 생성하거나 저장하지 않도록 함
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
