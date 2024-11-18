@@ -19,6 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     // 로그인 시도시 DB로부터 사용자 이름(이메일)을 통해 사용자 정보를 불러옴
     @Override
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
+        System.out.println("Requested Email: " + userEmail);
         User user = userRepository.findByUserEmail(userEmail);
         // 사용자가 존재하지 않으면 예외를 던짐
         if (user == null) {

@@ -8,11 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -24,7 +22,5 @@ public class AuthController {
         userService.saveUser(userRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered"); // 201 Created
     }
-
-
 
 }

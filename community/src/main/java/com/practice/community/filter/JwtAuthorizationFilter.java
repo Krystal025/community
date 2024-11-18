@@ -21,6 +21,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // 토큰이 필요없는 회원가입에 대한 필터 적용 방지
+        if (request.getRequestURI().startsWith("/signup")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         // 요청 헤더에서 Authorization 필드를 찾음
         String authorization = request.getHeader("Authorization");
         if(authorization == null || !authorization.startsWith("Bearer ")){
@@ -31,6 +36,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
         // Bearer 접두사 분리 (공백으로 분리한 뒤 인덱스[1] 요소 선택)
         String token = authorization.split(" ")[1];
+
         System.out.println("Extracted Token: " + token);
 
         // 토큰 만료 여부 확인
@@ -48,7 +54,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         // 인증에 필요한 사용자 정보 객체 생성
         CustomUserDetails customUserDetails = CustomUserDetails.builder()
                 .userEmail(userEmail)              // JWT에서 추출한 userEmail
-                .password("dummyPassword")         // 비밀번호는 어차피 사용하지 않으므로 임시값 사용
+                .password(null)         // 비밀번호는 어차피 사용하지 않으므로 임시값 사용
                 .role(Role.valueOf(userRole))      // JWT에서 추출한 userRole
                 .build();
 

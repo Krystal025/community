@@ -11,9 +11,6 @@ spring:
     properties:
       hibernate:
         format_sql: true # SQL을 보여줄때 포맷형식으로 보여줌
-  mustache:
-    servlet:
-      expose-request-attributes: true
 
 server:
   port: 8080

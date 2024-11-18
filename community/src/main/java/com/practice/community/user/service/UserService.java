@@ -3,7 +3,9 @@ package com.practice.community.user.service;
 import com.practice.community.exception.custom.EmailAlreadyExistsException;
 import com.practice.community.exception.ErrorCode;
 import com.practice.community.exception.custom.NicknameAlreadyExistsException;
+import com.practice.community.exception.custom.UnauthorizedAccessException;
 import com.practice.community.exception.custom.UserNotFoundException;
+import com.practice.community.user.dto.CustomUserDetails;
 import com.practice.community.user.dto.UserRequestDto;
 import com.practice.community.user.dto.UserResponseDto;
 import com.practice.community.user.entity.User;
@@ -11,6 +13,8 @@ import com.practice.community.user.enums.Status;
 import com.practice.community.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +30,6 @@ public class UserService {
 
     // 사용자 등록
     public void saveUser(UserRequestDto userRequestDto){
-        System.out.println("Received password: " + userRequestDto.getUserPwd());
         // 비밀번호가 null인지 확인
         if (userRequestDto.getUserPwd() == null || userRequestDto.getUserPwd().isEmpty()) {
             throw new IllegalArgumentException("Password cannot be null or empty");
@@ -89,26 +92,58 @@ public class UserService {
     // 사용자 정보 수정
     @Transactional // 트랜잭션이 성공적으로 완료되면 변경사항이 자동으로 커밋되어 DB에 반영됨
     public void updateUser(Long userId, UserRequestDto userRequestDto) {
+        // 현재 인증된 사용자 이메일
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInEmail = authentication.getName();
+
         User user = userRepository.findById(userId) // 영속성 컨텍스트에 사용자가 존재하는지 확인
                 .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND)); // 사용자 Id가 없으면 에러 처리
-        // 이메일 중복 체크
-        if (userRepository.existsByUserEmail(userRequestDto.getUserEmail()) &&
-                !userRequestDto.getUserEmail().equals(user.getUserEmail())) {
-            throw new EmailAlreadyExistsException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        String userEmail = user.getUserEmail().replaceAll("\\s+", "").trim();
+
+        // JWT 사용자 이메일과 요청 이메일 비교
+        if(!userEmail.equals(loggedInEmail)){
+            compareStringsWithLogs(user.getUserName(), loggedInEmail);
+            throw new UnauthorizedAccessException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
         // 닉네임 중복 체크
-        if (userRepository.existsByUserNickname(userRequestDto.getUserNickname()) &&
+        if (userRequestDto.getUserNickname() != null &&
+                userRepository.existsByUserNickname(userRequestDto.getUserNickname()) &&
                 !userRequestDto.getUserNickname().equals(user.getUserNickname())) {
             throw new NicknameAlreadyExistsException(ErrorCode.NICKNAME_ALREADY_EXISTS);
         }
         // 기존 객체의 상태를 유지하면서 일부 필드만 수정
         User updatedUser = user.toBuilder()  // 기존 객체를 기반으로 빌더 사용 (일부 필드 수정 가능)
-                .userEmail(userRequestDto.getUserEmail())
-                .userPwd(userRequestDto.getUserPwd())
-                .userNickname(userRequestDto.getUserNickname())
+                .userPwd(userRequestDto.getUserPwd() != null ? passwordEncoder.encode(userRequestDto.getUserPwd()) : user.getUserPwd())
+                .userNickname(userRequestDto.getUserNickname() != null ? userRequestDto.getUserNickname() : user.getUserNickname())
                 .build();
         userRepository.save(updatedUser);
     }
+
+    public void compareStringsWithLogs(String string1, String string2) {
+        // 길이가 다른 경우 바로 비교 종료
+        if (string1.length() != string2.length()) {
+            System.out.println("Strings have different lengths.");
+            return;
+        }
+
+        // 문자 단위로 비교
+        for (int i = 0; i < string1.length(); i++) {
+            char char1 = string1.charAt(i);
+            char char2 = string2.charAt(i);
+
+            // 문자와 코드 포인트 출력
+            System.out.println("Index " + i + ": ");
+            System.out.println("String 1 - Char: '" + char1 + "', CodePoint: " + (int) char1);
+            System.out.println("String 2 - Char: '" + char2 + "', CodePoint: " + (int) char2);
+
+            // 문자가 다르면 비교 종료
+            if (char1 != char2) {
+                System.out.println("Difference found at index " + i);
+                break;
+            }
+        }
+    }
+
 
     // 사용자 비활성화(탈퇴)
     @Transactional

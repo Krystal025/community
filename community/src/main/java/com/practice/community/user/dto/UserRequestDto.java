@@ -15,13 +15,13 @@ public class UserRequestDto {
     @NotBlank(message = "Name must not be blank", groups = ValidationGroups.Create.class)
     private String userName;
 
-    @NotBlank(message = "Email must not be blank")
+    @NotBlank(message = "Email must not be blank", groups = ValidationGroups.Create.class)
     private String userEmail;
 
-    @NotBlank(message = "Password must not be blank")
+    @NotBlank(message = "Password must not be blank", groups = ValidationGroups.Create.class)
     private String userPwd;
 
-    @NotBlank(message = "Nickname must not be blank")
+    @NotBlank(message = "Nickname must not be blank", groups = ValidationGroups.Create.class)
     private String userNickname;
 
     private Gender userGender;

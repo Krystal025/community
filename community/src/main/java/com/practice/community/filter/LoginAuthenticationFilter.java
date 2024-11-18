@@ -35,7 +35,8 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
 
     // 로그인 시도시 인증을 처리하는 메소드 (HTTP 요청에서 username과 password를 추출하여 인증 토큰 생성 후 인증 시도
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        System.out.println("Request URL: " + request.getRequestURL());
         // JSON 형식의 요청을 파싱하여 `LoginRequestDto`로 변환
         ObjectMapper objectMapper = new ObjectMapper();
         LoginRequestDto loginRequestDto = null;
@@ -44,13 +45,9 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         } catch (IOException e) {
             throw new RuntimeException("Invalid login request format");
         }
-
-        System.out.println("username: " + loginRequestDto.getUsername() + "password: " + loginRequestDto.getPassword());
-
         // 토큰 생성 및 인증 시도
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 loginRequestDto.getUsername(), loginRequestDto.getPassword());
-
         // UsernamePasswordAuthenticationToken 인증
         Authentication authentication = authenticationManager.authenticate(authToken);
         System.out.println("Authentication successful: " + authentication);
@@ -62,10 +59,6 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         // 인증된 사용자 정보 반환
         CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
-
-        // 디버깅을 위한 로그 추가
-        System.out.println("Authentication Successful");
-
         // 사용자 이메일 추출
         String userEmail = customUserDetails.getUsername();
         // 사용자 역할을 컬렉션에 담고, iterator로 반복하여 추출
@@ -73,11 +66,11 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String userRole = auth.getAuthority();
-        // JWT 토큰 생성 (만료시간 : 10시간)
-        String token = jwtTokenProvider.createJwt(userEmail, userRole, 60*60*10L);
+        // JWT 토큰 생성 (만료시간 : 1시간)
+        String token = jwtTokenProvider.createJwt(userEmail, userRole, 3600000L);
 
         // 디버깅을 위한 로그 추가
-        System.out.println("Generated Token: " + token);
+        System.out.println("Generated Token: " + "Bearer " + token);
 
         // Authorization 필드에 Bearer 접두사를 붙여 토큰을 포함시킨 뒤 HTTP 응답 헤더에 추가
         response.addHeader("Authorization", "Bearer " + token);

@@ -30,7 +30,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     // loadByUsername이 반환한 User 객체에서 사용자 식별자로 사용할 이메일을 반환

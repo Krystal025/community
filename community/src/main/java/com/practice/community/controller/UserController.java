@@ -18,13 +18,6 @@ public class UserController {
 
     private final UserService userService;
 
-    // 사용자 목록 조회 API
-    @GetMapping("/list")
-    public ResponseEntity<List<UserResponseDto>> getUserList(){
-        List<UserResponseDto> userList = userService.getList();
-        return ResponseEntity.ok(userList); // 200 OK
-    }
-
     // 사용자 정보 조회 API
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUserInfo(@PathVariable("userId") Long userId){
