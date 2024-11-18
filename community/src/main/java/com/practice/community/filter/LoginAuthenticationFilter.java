@@ -21,23 +21,17 @@ import java.util.Collection;
 import java.util.Iterator;
 
 // 로그인 요청 (POST 요청)에 대해서만 인증을 처리하는 필터로 폼 로그인 방식에서 사용됨
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public LoginAuthenticationFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenProvider = jwtTokenProvider;
-        setFilterProcessesUrl("/login");  // /login 경로에 대해 필터가 동작하도록 설정
-    }
-
     // 로그인 시도시 인증을 처리하는 메소드 (HTTP 요청에서 username과 password를 추출하여 인증 토큰 생성 후 인증 시도
     @Override
         public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         System.out.println("Request URL: " + request.getRequestURL());
-        // JSON 형식의 요청을 파싱하여 `LoginRequestDto`로 변환
+        // JSON 형식의 요청을 파싱하여 'LoginRequestDto'로 변환
         ObjectMapper objectMapper = new ObjectMapper();
         LoginRequestDto loginRequestDto = null;
         try {
@@ -45,12 +39,12 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         } catch (IOException e) {
             throw new RuntimeException("Invalid login request format");
         }
-        // 토큰 생성 및 인증 시도
+        // 로그인 인증과정에서 필요한 (임시)토큰 발급
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 loginRequestDto.getUsername(), loginRequestDto.getPassword());
-        // UsernamePasswordAuthenticationToken 인증
+        // 로그인용 토큰으로 AuthenticationManager에게 인증 요청
         Authentication authentication = authenticationManager.authenticate(authToken);
-        System.out.println("Authentication successful: " + authentication);
+        // 권한을 포함한 사용자 정보 객체 반환
         return authentication;
     }
 
@@ -68,12 +62,10 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         String userRole = auth.getAuthority();
         // JWT 토큰 생성 (만료시간 : 1시간)
         String token = jwtTokenProvider.createJwt(userEmail, userRole, 3600000L);
-
-        // 디버깅을 위한 로그 추가
-        System.out.println("Generated Token: " + "Bearer " + token);
-
         // Authorization 필드에 Bearer 접두사를 붙여 토큰을 포함시킨 뒤 HTTP 응답 헤더에 추가
         response.addHeader("Authorization", "Bearer " + token);
+        // 디버깅을 위한 로그 추가
+        System.out.println("Generated Token: " + "Bearer " + token);
     }
 
     // 인증 실패시 호출되는 메소드

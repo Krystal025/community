@@ -14,6 +14,7 @@ import com.practice.community.user.enums.Status;
 import com.practice.community.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +29,14 @@ public class BoardService {
 
     // 게시글 등록
     public void saveBoard(Long userId, BoardRequestDto boardRequestDto) {
+        // 현재 인증된 사용자 이메일
+        String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        // 활성화된 사용자인지 확인
         User user = userRepository.findByUserIdAndUserStatus(userId, Status.ACTIVE)
                 .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
+        // 게시글 작성자 이메일
+        String boardUserEmail = user.getUserEmail().replaceAll("\\s+", "").trim();
+        validateEmail(loggedInEmail, boardUserEmail);
         Board board = Board.builder()
                 .user(user)
                 .boardTitle(boardRequestDto.getBoardTitle())
@@ -80,20 +87,27 @@ public class BoardService {
     // 게시글 수정
     @Transactional
     public void updateBoard(Long boardId, Long userId, BoardRequestDto boardRequestDto) {
+        // 현재 인증된 사용자 이메일
+        String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new PostNotFoundException(ErrorCode.POST_NOT_FOUND));
+        // 게시글 작성자 이메일
+        String boardUserEmail = board.getUser().getUserEmail().replaceAll("\\s+", "").trim();
         // 게시글 수정 권한 확인
-        if(!board.getUser().getUserId().equals(userId)){
-            throw new UnauthorizedAccessException(ErrorCode.UNAUTHORIZED_ACCESS);
-        }
-        // 제목 또는 내용에 빈 값이 없는지 확인
-        if (boardRequestDto.getBoardTitle() == null || boardRequestDto.getBoardTitle().isEmpty() ||
-                boardRequestDto.getBoardContent() == null || boardRequestDto.getBoardContent().isEmpty()) {
-            throw new RequiredFieldMissingException(ErrorCode.REQUIRED_FIELD_MISSING);
+        validateEmail(loggedInEmail, boardUserEmail);
+        // 변경된 내용이 없는지 확인
+        // 제목 또는 내용에 변경이 있는지 확인
+        boolean isTitleChanged = boardRequestDto.getBoardTitle() != null &&
+                !boardRequestDto.getBoardTitle().equals(board.getBoardTitle());
+        boolean isContentChanged = boardRequestDto.getBoardContent() != null &&
+                !boardRequestDto.getBoardContent().equals(board.getBoardContent());
+        // 만약 제목이나 내용이 변경되지 않았으면 업데이트하지 않음
+        if (!isTitleChanged && !isContentChanged) {
+            return;  // 변경사항 없으므로 리턴
         }
         Board updatedBoard = board.toBuilder()
-                .boardTitle(boardRequestDto.getBoardTitle())
-                .boardContent(boardRequestDto.getBoardContent())
+                .boardTitle(isTitleChanged ? boardRequestDto.getBoardTitle() : board.getBoardTitle())
+                .boardContent(isContentChanged ? boardRequestDto.getBoardContent() : board.getBoardContent())
                 .build();
         boardRepository.save(updatedBoard);
     }
@@ -101,12 +115,31 @@ public class BoardService {
     // 게시글 삭제
     @Transactional
     public void deleteBoard(Long boardId, Long userId){
+        // 인증된 사용자의 권한
+        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        // 현재 인증된 사용자 이메일
+        String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new PostNotFoundException(ErrorCode.POST_NOT_FOUND));
-        if(!board.getUser().getUserId().equals(userId)){
+        // 게시글 작성자 이메일
+        String boardUserEmail = board.getUser().getUserEmail().replaceAll("\\s+", "").trim();
+        // 게시글 수정 권한 확인
+        if (!boardUserEmail.equals(loggedInEmail) && !isAdmin) {
             throw new UnauthorizedAccessException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
         boardRepository.delete(board);
     }
 
+    // 이메일 비교 메소드 (추후 AOP로 분리)
+    private void validateEmail(String loggedInEmail, String requestedEmail) {
+        if (!loggedInEmail.equals(requestedEmail)) {
+            throw new UnauthorizedAccessException(ErrorCode.UNAUTHORIZED_ACCESS);
+        }
+    }
+
+    // 빈 문자열과 null을 체크하는 유틸리티 메소드
+    private boolean isNullOrEmpty(String str) {
+        return str == null || str.trim().isEmpty();
+    }
 }

@@ -18,6 +18,13 @@ public class UserController {
 
     private final UserService userService;
 
+    // 회원가입 API
+    @PostMapping("/signup")
+    public ResponseEntity<String> saveUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+        userService.saveUser(userRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body("User registered"); // 201 Created
+    }
+
     // 사용자 정보 조회 API
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUserInfo(@PathVariable("userId") Long userId){

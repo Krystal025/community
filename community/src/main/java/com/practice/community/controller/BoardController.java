@@ -2,10 +2,12 @@ package com.practice.community.controller;
 
 import com.practice.community.board.dto.BoardRequestDto;
 import com.practice.community.board.dto.BoardResponseDto;
+import com.practice.community.board.dto.ValidationGroups;
 import com.practice.community.board.service.BoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,9 +20,9 @@ public class BoardController {
     private final BoardService boardService;
 
     // 게시글 등록 API
-    @PostMapping("/{userId}")
+    @PostMapping("/post/{userId}")
     public ResponseEntity<String> saveBoard(@PathVariable("userId") Long userId,
-                                            @Valid @RequestBody BoardRequestDto boardRequestDto){
+                                            @Validated(ValidationGroups.Create.class) @RequestBody BoardRequestDto boardRequestDto){
         boardService.saveBoard(userId, boardRequestDto);
         return ResponseEntity.ok("Post saved");
     }
@@ -41,7 +43,7 @@ public class BoardController {
     @PutMapping("/update/{boardId}/{userId}")
     public ResponseEntity<String> updatePost(@PathVariable("boardId") Long boardId,
                                              @PathVariable("userId") Long userId,
-                                             @Valid @RequestBody BoardRequestDto boardRequestDto) {
+                                             @Validated(ValidationGroups.Update.class) @RequestBody BoardRequestDto boardRequestDto) {
         boardService.updateBoard(boardId, userId, boardRequestDto);
         return ResponseEntity.ok("Post Updated");
     }

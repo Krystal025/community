@@ -1,5 +1,6 @@
 package com.practice.community.user.service;
 
+import com.practice.community.exception.ErrorCode;
 import com.practice.community.user.dto.CustomUserDetails;
 import com.practice.community.user.entity.User;
 import com.practice.community.user.repository.UserRepository;
@@ -23,13 +24,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUserEmail(userEmail);
         // 사용자가 존재하지 않으면 예외를 던짐
         if (user == null) {
-            throw new UsernameNotFoundException("User not found with email: " + userEmail);
+            throw new UsernameNotFoundException(ErrorCode.USER_NOT_FOUND.toString());
         }
         // DB에서 불러온 User 엔티티를 바탕으로 UserDetails 객체를 생성하여 반환
         CustomUserDetails customUserDetails = CustomUserDetails.fromUser(user);
-
-        System.out.println("Loaded User: " + customUserDetails.getUsername());
-
         return customUserDetails;
     }
 }

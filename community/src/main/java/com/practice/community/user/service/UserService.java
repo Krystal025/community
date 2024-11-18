@@ -5,7 +5,6 @@ import com.practice.community.exception.ErrorCode;
 import com.practice.community.exception.custom.NicknameAlreadyExistsException;
 import com.practice.community.exception.custom.UnauthorizedAccessException;
 import com.practice.community.exception.custom.UserNotFoundException;
-import com.practice.community.user.dto.CustomUserDetails;
 import com.practice.community.user.dto.UserRequestDto;
 import com.practice.community.user.dto.UserResponseDto;
 import com.practice.community.user.entity.User;
@@ -13,7 +12,6 @@ import com.practice.community.user.enums.Status;
 import com.practice.community.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,11 +28,15 @@ public class UserService {
 
     // 사용자 등록
     public void saveUser(UserRequestDto userRequestDto){
-        // 비밀번호가 null인지 확인
-        if (userRequestDto.getUserPwd() == null || userRequestDto.getUserPwd().isEmpty()) {
-            throw new IllegalArgumentException("Password cannot be null or empty");
+        // 이메일 중복 체크
+        if(userRepository.existsByUserEmail(userRequestDto.getUserEmail())){
+            throw new EmailAlreadyExistsException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
-        try{ // DTO를 엔티티로 변환하여 DB에 저장함
+        // 닉네임 중복 체크
+        if(userRepository.existsByUserNickname(userRequestDto.getUserNickname())){
+            throw new NicknameAlreadyExistsException(ErrorCode.NICKNAME_ALREADY_EXISTS);
+        }
+        try{ // DTO를 엔티티로 변환하여 DB에 저장
             User user = User.builder()
                     .userName(userRequestDto.getUserName())
                     .userEmail(userRequestDto.getUserEmail())
@@ -45,13 +47,6 @@ public class UserService {
                     .build();
             userRepository.save(user);
         }catch (DataIntegrityViolationException e){
-            String errorMessage = e.getCause().getMessage();
-            if(errorMessage.contains("user.user_email")){
-                throw new EmailAlreadyExistsException(ErrorCode.EMAIL_ALREADY_EXISTS);
-            }
-            if(errorMessage.contains("user.user_nickname")){
-                throw new NicknameAlreadyExistsException(ErrorCode.NICKNAME_ALREADY_EXISTS);
-            }
             throw new RuntimeException(ErrorCode.INTERNAL_SERVER_ERROR.getMessage());
         }
     }
@@ -76,8 +71,14 @@ public class UserService {
 
     // 사용자 정보 조회
     public UserResponseDto getUser(Long userId) {
+        // 현재 인증된 사용자 이메일
+        String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
+        // 요청한 사용자 이메일
+        String userEmail = user.getUserEmail().replaceAll("\\s+", "").trim();
+        // JWT에서 추출한 이메일과 요청 이메일 비교
+        validateEmail(loggedInEmail, userEmail);
         return UserResponseDto.builder()
                 .userId(user.getUserId())
                 .userName(user.getUserName())
@@ -93,18 +94,14 @@ public class UserService {
     @Transactional // 트랜잭션이 성공적으로 완료되면 변경사항이 자동으로 커밋되어 DB에 반영됨
     public void updateUser(Long userId, UserRequestDto userRequestDto) {
         // 현재 인증된 사용자 이메일
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String loggedInEmail = authentication.getName();
-
-        User user = userRepository.findById(userId) // 영속성 컨텍스트에 사용자가 존재하는지 확인
-                .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND)); // 사용자 Id가 없으면 에러 처리
+        String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        // 영속성 컨텍스트에 사용자가 존재하는지 확인
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
+        // 요청한 사용자 이메일
         String userEmail = user.getUserEmail().replaceAll("\\s+", "").trim();
-
-        // JWT 사용자 이메일과 요청 이메일 비교
-        if(!userEmail.equals(loggedInEmail)){
-            compareStringsWithLogs(user.getUserName(), loggedInEmail);
-            throw new UnauthorizedAccessException(ErrorCode.UNAUTHORIZED_ACCESS);
-        }
+        // JWT에서 추출한 이메일과 요청 이메일 비교
+        validateEmail(loggedInEmail, userEmail);
         // 닉네임 중복 체크
         if (userRequestDto.getUserNickname() != null &&
                 userRepository.existsByUserNickname(userRequestDto.getUserNickname()) &&
@@ -119,41 +116,34 @@ public class UserService {
         userRepository.save(updatedUser);
     }
 
-    public void compareStringsWithLogs(String string1, String string2) {
-        // 길이가 다른 경우 바로 비교 종료
-        if (string1.length() != string2.length()) {
-            System.out.println("Strings have different lengths.");
-            return;
-        }
-
-        // 문자 단위로 비교
-        for (int i = 0; i < string1.length(); i++) {
-            char char1 = string1.charAt(i);
-            char char2 = string2.charAt(i);
-
-            // 문자와 코드 포인트 출력
-            System.out.println("Index " + i + ": ");
-            System.out.println("String 1 - Char: '" + char1 + "', CodePoint: " + (int) char1);
-            System.out.println("String 2 - Char: '" + char2 + "', CodePoint: " + (int) char2);
-
-            // 문자가 다르면 비교 종료
-            if (char1 != char2) {
-                System.out.println("Difference found at index " + i);
-                break;
-            }
-        }
-    }
-
-
     // 사용자 비활성화(탈퇴)
     @Transactional
     public void deactivateUser(Long userId) {
+        // 인증된 사용자의 권한
+        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        // 현재 인증된 사용자 이메일
+        String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        // 영속성 컨텍스트에 사용자가 존재하는지 확인
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
+        // 요청한 사용자 이메일
+        String userEmail = user.getUserEmail().replaceAll("\\s+", "").trim();
+        // JWT에서 추출한 이메일과 요청 이메일이 같거나, 관리자인 경우에만 비활성화 가능
+        if (!userEmail.equals(loggedInEmail) && !isAdmin) {
+            throw new UnauthorizedAccessException(ErrorCode.UNAUTHORIZED_ACCESS);
+        }
         User deactivateUser = user.toBuilder()
                 .userStatus(Status.INACTIVE) // 상태 변경
                 .build();
         userRepository.save(deactivateUser);
+    }
+
+    // 이메일 비교 메소드 (추후 AOP로 분리)
+    private void validateEmail(String loggedInEmail, String requestedEmail) {
+        if (!loggedInEmail.equals(requestedEmail)) {
+            throw new UnauthorizedAccessException(ErrorCode.UNAUTHORIZED_ACCESS);
+        }
     }
 
 }
