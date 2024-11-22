@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+// 회원가입 및 회원정보 수정시 사용자의 데이터를 담는 DTO
 @Getter
 @NoArgsConstructor
 public class UserRequestDto {
@@ -26,7 +27,6 @@ public class UserRequestDto {
 
     private Gender userGender;
 
-    @NotNull(message = "Birthday must not be blank", groups = ValidationGroups.Create.class)
     private LocalDate userBirthday;
 
 }

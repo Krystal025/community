@@ -8,11 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-// Spring Security에서 인증/인가 작업에 필요한 정보를 제공하기 위해 사용자 정보를 담고있는 객체
+// Spring Security에서 인증/인가 작업에 필요한 정보를 제공하기 위해 사용자 정보를 담는 DTO
 @RequiredArgsConstructor //final 또는 @NotNull로 선언된 필드에 대해 자동으로 생성자를 만들어 줌
 @Getter
 @Builder
@@ -25,7 +24,7 @@ public class CustomUserDetails implements UserDetails {
     // 사용자에게 부여된 권한(Role) 반환
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> role.name());
+        return List.of(role::name);
     }
 
     @Override

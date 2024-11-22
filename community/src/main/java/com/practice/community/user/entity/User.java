@@ -4,16 +4,13 @@ import com.practice.community.user.enums.Gender;
 import com.practice.community.user.enums.Role;
 import com.practice.community.user.enums.Status;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true) // 기존 인스턴스를 복사하여 새로운 인스턴스를 만들고, 일부 필드만 변경할 수 있도록 함를
@@ -29,7 +26,7 @@ public class User {
     @Column(nullable = false, length = 100, unique = true)
     private String userEmail;
 
-    @Column(nullable = false, length = 128)
+    @Column(length = 128)
     private String userPwd;
 
     @Column(nullable = false, length = 50, unique = true)
@@ -38,7 +35,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender userGender;
 
-    @Column(nullable = false)
+    @Column
     private LocalDate userBirthday;
 
     @Enumerated(EnumType.STRING)
@@ -49,6 +46,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role userRole;
+
+    @Column(length = 100, unique = true)
+    private String socialUserId;
 
     @PrePersist // 처음 생성되는 엔티티가 DB에 저장되기 전에 호출됨
     private void onCreate() {

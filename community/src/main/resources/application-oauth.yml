@@ -1,0 +1,13 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration: ## OAuth2 클라이언트(내 애플리케이션)가 소셜 로그인 제공자로부터 발급받은 정보를 설정
+          google:
+            client-id: 1051346477544-gb8r2flu75uanqcbdbo26j7efsvldq48.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
+            authorization-grant-type: authorization_code
+            scope:
+              - email
+              - profile
