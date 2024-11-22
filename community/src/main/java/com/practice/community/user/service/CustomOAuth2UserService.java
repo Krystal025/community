@@ -21,7 +21,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     // OAuth2 인증과정에서 사용자 정보를 가져옴
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        // OAuth2 사용자 정보를 가져옴
+        // OAuth2에서 사용자 정보를 가져옴
         OAuth2User oAuth2User = super.loadUser(userRequest);
         System.out.println(oAuth2User);
         // 어떤 소셜 로그인 제공자에서 요청이 왔는지 확인

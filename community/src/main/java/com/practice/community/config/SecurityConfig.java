@@ -30,6 +30,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomSuccessHandler customSuccessHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
@@ -68,7 +69,9 @@ public class SecurityConfig {
                         // 제공자로부터 Access 토큰을 받은 후 사용자 정보(e.g. 이메일, 이름)를 가져오기 위한 엔드포인트 설정
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
                                 // 사용자 정보를 처리할 서비스 설정
-                                .userService(customOAuth2UserService)));
+                                .userService(customOAuth2UserService))
+                        // OAuth 인증이 성공적으로 완료된 후 실행될 성공 핸들러 설정
+                        .successHandler(customSuccessHandler));
         http
                 // 요청경로별 인가 작업
                 .authorizeHttpRequests((auth)-> auth

@@ -13,7 +13,7 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     // JWT 암호화 알고리즘에 사용될 비밀키 저장
-    private SecretKey secretKey;
+    private final SecretKey secretKey;
 
     // JWT에 사용할 암호화 키 설정 (yml에 설정된 환경변수를 가져와 JWT에서 요구하는 형태로 변환하여 사용)
     public JwtTokenProvider(@Value("${jwt.secret}")String secret){
@@ -35,7 +35,7 @@ public class JwtTokenProvider {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    // JWT 토큰 생성
+    // JWT 토큰 생성 (일반 로그인용)
     public String createJwt(String userEmail, String userRole, Long expireTime){
         return Jwts.builder()
                 .claim("userEmail", userEmail) // 사용자 이메일을 claim(key-value 구조)으로 추가
@@ -44,5 +44,16 @@ public class JwtTokenProvider {
                 .expiration(new Date(System.currentTimeMillis() + expireTime)) // 토큰 만료시점 설정
                 .signWith(secretKey) // JWT 서명(signature)시 사용할 암호키 지정
                 .compact(); // JWT의 Header, Payload, Signature를 결합하여 문자열로 반환
+    }
+
+    // JWT 토큰 생성 (OAuth 로그인용)
+    public String createJwtForOAuth(String socialId, String role, Long expireTime) {
+        return Jwts.builder()
+                .claim("socialId", socialId)  // 소셜 로그인에서 얻은 사용자 고유 ID
+                .claim("role", role)          // 사용자 역할 (예: ROLE_USER)
+                .issuedAt(new Date(System.currentTimeMillis()))  // 발행 시점
+                .expiration(new Date(System.currentTimeMillis() + expireTime))  // 만료 시점
+                .signWith(secretKey)  // 서명에 사용될 비밀 키
+                .compact();  // JWT 생성
     }
 }

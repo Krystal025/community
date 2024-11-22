@@ -2,7 +2,6 @@ package com.practice.community.user.dto;
 
 import com.practice.community.user.enums.Gender;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
