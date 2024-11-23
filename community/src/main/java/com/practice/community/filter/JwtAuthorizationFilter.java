@@ -5,6 +5,7 @@ import com.practice.community.user.enums.Role;
 import com.practice.community.util.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +22,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authorization = request.getHeader("Authorization");
-        // JWT가 없을 경우
-        if(authorization == null || !authorization.startsWith("Bearer ")){
-            System.out.println("Token Null");
+        // 헤더에서 Authorization에 있는 토큰 추출
+        String token = request.getHeader("Authorization");
+        // 토큰이 없거나 "Bearer "로 시작하지 않으면 바로 필터 체인 진행
+        if (token == null || !token.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
-        // Bearer 접두사 분리 (공백으로 분리한 뒤 인덱스[1] 요소 선택)
-        String token = authorization.split(" ")[1];
-        // JWT 만료 여부 확인
-        if(jwtTokenProvider.isExpired(token)){
+        // "Bearer " 부분을 잘라내고 실제 토큰만 추출
+        token = token.substring(7);
+        // JWT 토큰 만료 여부 확인
+        if (jwtTokenProvider.isExpired(token)) {
             System.out.println("Token Expired");
             filterChain.doFilter(request, response);
             return;

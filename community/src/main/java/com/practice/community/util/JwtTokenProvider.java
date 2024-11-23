@@ -1,5 +1,6 @@
 package com.practice.community.util;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,16 @@ public class JwtTokenProvider {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userRole", String.class);
     }
 
+    // JWT 토큰에서 소셜 ID 추출
+    public String getSocialId(String token){
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("socialId", String.class);
+    }
+
+    // JWT 토큰에서 소셜 로그인 사용자의 역할 추출
+    public String getRole(String token){
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
+    }
+
     // JWT 토큰의 유효기간 추출 및 현재 시간과의 비교를 통한 만료 여부 확인
     public Boolean isExpired(String token){
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
@@ -56,4 +67,5 @@ public class JwtTokenProvider {
                 .signWith(secretKey)  // 서명에 사용될 비밀 키
                 .compact();  // JWT 생성
     }
+
 }

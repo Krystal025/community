@@ -2,9 +2,9 @@ package com.practice.community.config;
 
 import com.practice.community.filter.JwtAuthorizationFilter;
 import com.practice.community.filter.LoginAuthenticationFilter;
+import com.practice.community.filter.OAuth2AuthenticationFilter;
 import com.practice.community.user.service.CustomOAuth2UserService;
 import com.practice.community.util.JwtTokenProvider;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Collections;
 
@@ -79,7 +78,9 @@ public class SecurityConfig {
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated());
         http
-                // 로그인 인증 필터 (최초 로그인 또는 토큰 만료시 이메일과 비밀번호로 인증 처리)
+                // 소셜 로그인 인증 핉터
+                .addFilterBefore(new OAuth2AuthenticationFilter(jwtTokenProvider), LoginAuthenticationFilter.class)
+                // 일반 로그인 인증 필터 (최초 로그인 또는 토큰 만료시 이메일과 비밀번호로 인증 처리)
                 .addFilterBefore(new LoginAuthenticationFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 // 모든 요청에 대해 JWT 토큰이 유효한지 검증 (이미 로그인을 해서 토큰을 가지고 있을 때 해당 토큰의 유효성을 검사)
                 .addFilterAfter(new JwtAuthorizationFilter(jwtTokenProvider), LoginAuthenticationFilter.class)

@@ -27,7 +27,6 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException(ErrorCode.USER_NOT_FOUND.toString());
         }
         // DB에서 불러온 User 엔티티를 바탕으로 UserDetails 객체를 생성하여 반환
-        CustomUserDetails customUserDetails = CustomUserDetails.fromUser(user);
-        return customUserDetails;
+        return CustomUserDetails.fromUser(user);
     }
 }
