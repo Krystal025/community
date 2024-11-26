@@ -2,7 +2,7 @@ package com.practice.community.config;
 
 import com.practice.community.filter.JwtAuthorizationFilter;
 import com.practice.community.filter.LoginAuthenticationFilter;
-import com.practice.community.filter.OAuth2AuthenticationFilter;
+import com.practice.community.filter.OAuth2AuthorizationFilter;
 import com.practice.community.user.service.CustomOAuth2UserService;
 import com.practice.community.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +52,7 @@ public class SecurityConfig {
                             configuration.setAllowCredentials(true); // 쿠키 전송 허용
                             configuration.setAllowedHeaders(Collections.singletonList("*")); // 모든 요청 헤더 허용
                             configuration.setMaxAge(3600L); // CORS 요청에 대한 캐시 유효시간 설정 (1시간)
+                            configuration.setExposedHeaders(Collections.singletonList("Set-Cookie")); // 서버가 응답헤더에 포함시킨 Set-Cookie를 클라이언트가 접근할 수 있도록 설정
                             configuration.setExposedHeaders(Collections.singletonList("Authorization")); // 클라이언트가 접근가능한 응답 헤더
                             return configuration;
                         }));
@@ -79,7 +80,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated());
         http
                 // 소셜 로그인 인증 핉터
-                .addFilterBefore(new OAuth2AuthenticationFilter(jwtTokenProvider), LoginAuthenticationFilter.class)
+                .addFilterBefore(new OAuth2AuthorizationFilter(jwtTokenProvider), LoginAuthenticationFilter.class)
                 // 일반 로그인 인증 필터 (최초 로그인 또는 토큰 만료시 이메일과 비밀번호로 인증 처리)
                 .addFilterBefore(new LoginAuthenticationFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 // 모든 요청에 대해 JWT 토큰이 유효한지 검증 (이미 로그인을 해서 토큰을 가지고 있을 때 해당 토큰의 유효성을 검사)

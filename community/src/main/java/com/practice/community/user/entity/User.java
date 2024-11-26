@@ -48,7 +48,7 @@ public class User {
     private Role userRole;
 
     @Column(length = 100, unique = true)
-    private String socialUserId;
+    private String socialId;
 
     @PrePersist // 처음 생성되는 엔티티가 DB에 저장되기 전에 호출됨
     private void onCreate() {

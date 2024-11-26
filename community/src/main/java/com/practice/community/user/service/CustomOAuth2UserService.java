@@ -5,7 +5,6 @@ import com.practice.community.user.entity.User;
 import com.practice.community.user.enums.Role;
 import com.practice.community.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -34,20 +33,20 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return null;
         }
         // 소셜 제공자 이름과 사용자 식별 ID를 조합하여 고유 ID 생성
-        String socialUserId = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+        String socialId = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
         // OAuth2 로그인을 통해 사용자 정보를 받아 해당 사용자가 존재하는지 확인
-        User existData = userRepository.findBySocialUserId(socialUserId);
+        User existData = userRepository.findBySocialId(socialId);
         // 이미 존재하는 사용자인지 확인
         if(existData == null){
             User user = User.builder() // 새로운 사용자 객체 생성
-                    .socialUserId(socialUserId)
+                    .socialId(socialId)
                     .userName(oAuth2Response.getName()) // OAuth에서 가져온 사용자 이름
                     .userEmail(oAuth2Response.getEmail()) // OAuth에서 가져온 이메일
                     .userNickname(oAuth2Response.getName()) // 기본 닉네임으로 사용자 이름 사용
                     .build();
             userRepository.save(user); // 사용자 정보 저장
             OAuth2InfoDto oAuth2InfoDto = OAuth2InfoDto.builder()
-                    .socialUserId(socialUserId)
+                    .socialId(socialId)
                     .name(oAuth2Response.getName())
                     .role(Role.ROLE_USER.toString()) // 클라이언트에게 전달한 사용자 Role
                     .build();
@@ -61,7 +60,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 userRepository.save(existData); // 수정된 사용자 정보 저장
             }
             OAuth2InfoDto oAuth2InfoDto = OAuth2InfoDto.builder()
-                    .socialUserId(existData.getSocialUserId())
+                    .socialId(existData.getSocialId())
                     .name(oAuth2Response.getName())
                     .role(existData.getUserRole().toString())
                     .build();

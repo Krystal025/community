@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class OAuth2InfoDto {
-     private String socialUserId; // 애플리케이션에서 사용자 식별에 사용하는 고유한 사용자 이름
+     private String socialId; // 애플리케이션에서 사용자 식별에 사용하는 고유한 사용자 이름
      private String name; // 사용자의 소셜 계정 이름
      private String role; // 사용자의 권한
 }

@@ -17,7 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @RequiredArgsConstructor
-public class OAuth2AuthenticationFilter extends OncePerRequestFilter {
+public class OAuth2AuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -47,7 +47,7 @@ public class OAuth2AuthenticationFilter extends OncePerRequestFilter {
         String role = jwtTokenProvider.getRole(token);
         // 사용자 정보를 OAuth2InfoDto 객체로 생성
         OAuth2InfoDto oAuth2InfoDto = OAuth2InfoDto.builder()
-                .socialUserId(socialId)
+                .socialId(socialId)
                 .role(role)
                 .build();
         // 사용자 정보로 CustomOAuth2User 객체 생성 (OAuth2User)
