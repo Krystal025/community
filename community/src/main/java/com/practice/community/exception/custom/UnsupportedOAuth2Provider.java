@@ -2,9 +2,9 @@ package com.practice.community.exception.custom;
 
 import com.practice.community.exception.ErrorCode;
 
-public class PostNotFoundException extends RuntimeException{
+public class UnsupportedOAuth2Provider extends RuntimeException{
 
-    public PostNotFoundException(ErrorCode errorCode){
+    public UnsupportedOAuth2Provider(ErrorCode errorCode){
         super(errorCode.getMessage());
 
     }

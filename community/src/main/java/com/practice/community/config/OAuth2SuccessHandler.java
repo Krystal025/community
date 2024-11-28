@@ -1,7 +1,6 @@
 package com.practice.community.config;
 
 import com.practice.community.user.dto.CustomOAuth2User;
-import com.practice.community.user.dto.CustomUserDetails;
 import com.practice.community.util.JwtTokenProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -19,16 +18,16 @@ import java.util.Iterator;
 
 @Component
 @RequiredArgsConstructor
-public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         // OAuth2 인증을 거친 사용자 정보를 CustomOAuth2User 객체로 반환
-        CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
+        CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         // OAuth 인증을 통해 얻은 소셜 ID를 가져옴
-        String socialId = customUserDetails.getSocialId();
+        String socialId = customOAuth2User.getSocialId();
         // 인증된 사용자의 권한정보를 가져옴
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         // 권한 목록에서 첫번째 권한을 추출함

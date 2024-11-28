@@ -6,13 +6,13 @@ import java.util.Map;
 
 // Google에서 반환받은 사용자 정보를 OAuth2Response 형태로 변환
 @RequiredArgsConstructor
-public class GoogleResponseDto implements OAuth2Response{
+public class GoogleResponse implements OAuth2Response{
 
     private final Map<String, Object> attribute;
 
     @Override
     public String getProvider() {
-        return "google";
+        return "google"; // yml에 설정한 소셜로그인 제공자 ID
     }
 
     @Override

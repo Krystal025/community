@@ -10,7 +10,8 @@ CREATE TABLE user(
 	user_status ENUM('ACTIVE', 'INACTIVE') DEFAULT 'ACTIVE' COMMENT '회원 상태',
 	user_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '회원 가입일',
 	user_role ENUM('ROLE_USER', 'ROLE_ADMIN') DEFAULT 'ROLE_USER' COMMENT '회원 역할(권한)',
-	socialId VARCHAR(100) UNIQUE COMMENT '회원 소셜 ID'
+	social_id VARCHAR(100) UNIQUE COMMENT '회원 소셜 ID',
+	provider VARCHAR(50) COMMENT '소셜 제공자'
 )COMMENT '회원' ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 -- 게시글 테이블 --

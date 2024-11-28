@@ -50,6 +50,9 @@ public class User {
     @Column(length = 100, unique = true)
     private String socialId;
 
+    @Column(length = 50)
+    private String provider;
+
     @PrePersist // 처음 생성되는 엔티티가 DB에 저장되기 전에 호출됨
     private void onCreate() {
         if (this.userGender == null) {

@@ -13,7 +13,9 @@ public enum ErrorCode {
     POST_NOT_FOUND(404, "Post Not Found"),
     EMAIL_ALREADY_EXISTS(409, "Email Already Exists"),
     NICKNAME_ALREADY_EXISTS(409, "Nickname Already Exists"),
-    INTERNAL_SERVER_ERROR(500, "Internal Server Error");
+    INTERNAL_SERVER_ERROR(500, "Internal Server Error"),
+
+    UNSUPPORTED_OAUTH2_PROVIDER(400, "Unsupported OAuth2 Provider");
 
     private final int status;
     private final String message;

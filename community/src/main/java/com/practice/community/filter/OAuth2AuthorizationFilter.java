@@ -1,7 +1,7 @@
 package com.practice.community.filter;
 
 import com.practice.community.user.dto.CustomOAuth2User;
-import com.practice.community.user.dto.OAuth2InfoDto;
+import com.practice.community.user.dto.OAuth2Info;
 import com.practice.community.util.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -46,12 +46,12 @@ public class OAuth2AuthorizationFilter extends OncePerRequestFilter {
         String socialId = jwtTokenProvider.getSocialId(token);
         String role = jwtTokenProvider.getRole(token);
         // 사용자 정보를 OAuth2InfoDto 객체로 생성
-        OAuth2InfoDto oAuth2InfoDto = OAuth2InfoDto.builder()
+        OAuth2Info oAuth2Info = OAuth2Info.builder()
                 .socialId(socialId)
                 .role(role)
                 .build();
         // 사용자 정보로 CustomOAuth2User 객체 생성 (OAuth2User)
-        CustomOAuth2User customOAuth2User = new CustomOAuth2User(oAuth2InfoDto);
+        CustomOAuth2User customOAuth2User = new CustomOAuth2User(oAuth2Info);
         // UsernamePasswordAuthenticationToken 생성하여 인증 객체로 사용 (역할/권한 포함)
         Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
         // 인증 정보를 SecurityContext에 저장하여 후속 필터에서 인증 정보를 사용할 수 있게 함

@@ -66,4 +66,10 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(UnsupportedOAuth2Provider.class)
+    public ResponseEntity<ErrorResponse> exceptionHandler(UnsupportedOAuth2Provider ex){
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.UNSUPPORTED_OAUTH2_PROVIDER);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 }
