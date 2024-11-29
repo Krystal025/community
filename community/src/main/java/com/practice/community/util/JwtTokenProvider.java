@@ -36,6 +36,10 @@ public class JwtTokenProvider {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("socialId", String.class);
     }
 
+    // JWT 토큰에서 소셜 로그인 사용자의 이메일 추출
+    public String getEmail(String token){
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
+    }
     // JWT 토큰에서 소셜 로그인 사용자의 역할 추출
     public String getRole(String token){
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
@@ -58,9 +62,10 @@ public class JwtTokenProvider {
     }
 
     // JWT 토큰 생성 (OAuth 로그인용)
-    public String createJwtForOAuth(String socialId, String role, Long expireTime) {
+    public String createJwtForOAuth(String socialId, String email, String role, Long expireTime) {
         return Jwts.builder()
                 .claim("socialId", socialId)  // 소셜 로그인에서 얻은 사용자 고유 ID
+                .claim("email", email)
                 .claim("role", role)          // 사용자 역할 (예: ROLE_USER)
                 .issuedAt(new Date(System.currentTimeMillis()))  // 발행 시점
                 .expiration(new Date(System.currentTimeMillis() + expireTime))  // 만료 시점

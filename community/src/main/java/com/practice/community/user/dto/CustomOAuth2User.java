@@ -33,14 +33,20 @@ public class CustomOAuth2User implements OAuth2User {
         return collection;
     }
 
-    // 사용자 식별을 위한 이메일 반환
+    // 사용자 이름
     @Override
     public String getName() {
-        return oAuth2Info.getEmail();
+        return oAuth2Info.getName();
     }
 
     // 소셜 로그인에서 제공하는 사용자 고유 ID 반환
     public String getSocialId(){
+
         return oAuth2Info.getSocialId();
+    }
+
+    // 사용자 이메일
+    public String getEmail(){
+        return oAuth2Info.getEmail();
     }
 }

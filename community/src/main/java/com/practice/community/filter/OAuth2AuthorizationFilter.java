@@ -44,10 +44,13 @@ public class OAuth2AuthorizationFilter extends OncePerRequestFilter {
         }
         // 유효한 토큰일 경우 토큰에서 사용자 정보 추출
         String socialId = jwtTokenProvider.getSocialId(token);
+        String email = jwtTokenProvider.getEmail(token);
         String role = jwtTokenProvider.getRole(token);
         // 사용자 정보를 OAuth2InfoDto 객체로 생성
         OAuth2Info oAuth2Info = OAuth2Info.builder()
                 .socialId(socialId)
+                .email(email)
+                .name(email)
                 .role(role)
                 .build();
         // 사용자 정보로 CustomOAuth2User 객체 생성 (OAuth2User)
