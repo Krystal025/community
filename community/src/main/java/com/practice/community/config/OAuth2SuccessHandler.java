@@ -39,15 +39,15 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // 소셜 ID와 역할을 이용하여 JWT 토큰을 생성함 (토큰 만료시간 : 1시간)
         String token = jwtTokenProvider.createJwtForOAuth(socialId, email, role, 3600000L);
         // 생성된 JWT 토큰을 쿠키에 담아 클라이언트에 전달함
-        response.addCookie(createCookie("Authorization", token));
+        response.addCookie(createCookie(token));
         // 클라이언트가 받은 토큰을 기반으로 리다이렉트 시킴 (로그인 후 사용자가 이동할 페이지)
         response.sendRedirect("http://localhost:8080/home");
     }
 
-    private Cookie createCookie(String key, String value) {
+    private Cookie createCookie(String value) {
         // 쿠키 객체 생성 (key : "Authorization", value : JWT 토큰값)
-        Cookie cookie = new Cookie(key, value);
-        // 쿠키 최대 유효시간
+        Cookie cookie = new Cookie("Authorization", value);
+        // 쿠키 최대 유효시간 (1시간)
         cookie.setMaxAge(60*60*60);
         //cookie.setSecure(true); // HTTPS 환경에서만 실행가능하도록 설정
         // 쿠키가 서버의 루트 경로에서만 유효하도록 설정

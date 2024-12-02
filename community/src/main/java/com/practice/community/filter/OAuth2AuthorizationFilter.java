@@ -2,6 +2,7 @@ package com.practice.community.filter;
 
 import com.practice.community.user.dto.CustomOAuth2User;
 import com.practice.community.user.dto.OAuth2Info;
+import com.practice.community.user.enums.Role;
 import com.practice.community.util.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,13 +25,18 @@ public class OAuth2AuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // Cookie에서 Authorization에 있는 토큰 추출
-        String token = null;
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            System.out.println(cookie.getName());
-            if (cookie.getName().equals("Authorization")) {
-                token = cookie.getValue(); // Authorization 쿠키에서 JWT 토큰 추출
-            }
+//        String token = null;
+//        Cookie[] cookies = request.getCookies();
+//        for (Cookie cookie : cookies) {
+//            System.out.println(cookie.getName());
+//            if (cookie.getName().equals("Authorization")) {
+//                token = cookie.getValue(); // Authorization 쿠키에서 JWT 토큰 추출
+//            }
+//        }
+        String token = request.getHeader("Authorization");
+        // Postman으로 테스트할 때만 사용
+        if(token != null && token.startsWith("Bearer ")){
+            token = token.substring(7);
         }
         if(token == null){
             System.out.println("Token Null");
@@ -51,7 +57,7 @@ public class OAuth2AuthorizationFilter extends OncePerRequestFilter {
                 .socialId(socialId)
                 .email(email)
                 .name(email)
-                .role(role)
+                .role(Role.valueOf(role))
                 .build();
         // 사용자 정보로 CustomOAuth2User 객체 생성 (OAuth2User)
         CustomOAuth2User customOAuth2User = new CustomOAuth2User(oAuth2Info);

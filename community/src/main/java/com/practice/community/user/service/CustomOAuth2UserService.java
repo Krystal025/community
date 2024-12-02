@@ -59,7 +59,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .provider(oAuth2Response.getProvider())
                     .name(oAuth2RequestDto.getUserName())
                     .email(oAuth2RequestDto.getUserEmail())
-                    .role(Role.ROLE_USER.toString()) // 클라이언트에게 전달한 사용자 Role
+                    .role(Role.ROLE_USER) // 클라이언트에게 전달한 사용자 Role
                     .build();
             return new CustomOAuth2User(oAuth2Info); // 인증/인가 작업에 사용될 사용자 정보 객체 반환
         }
@@ -83,7 +83,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .provider(existData.getProvider())
                     .name(oAuth2RequestDto.getUserName())
                     .email(oAuth2RequestDto.getUserEmail())
-                    .role(existData.getUserRole().toString())
+                    .role(existData.getUserRole())
                     .build();
             return new CustomOAuth2User(oAuth2Info); // 인증/인가 작업에 사용될 사용자 정보 객체 반환
         }

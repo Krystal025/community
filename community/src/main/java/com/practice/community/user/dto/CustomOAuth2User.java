@@ -27,7 +27,7 @@ public class CustomOAuth2User implements OAuth2User {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return oAuth2Info.getRole();
+                return oAuth2Info.getRole().toString();
             }
         });
         return collection;
@@ -41,7 +41,6 @@ public class CustomOAuth2User implements OAuth2User {
 
     // 소셜 로그인에서 제공하는 사용자 고유 ID 반환
     public String getSocialId(){
-
         return oAuth2Info.getSocialId();
     }
 

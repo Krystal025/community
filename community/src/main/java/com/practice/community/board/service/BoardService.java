@@ -28,15 +28,12 @@ public class BoardService {
     private final UserRepository userRepository;
 
     // 게시글 등록
-    public void saveBoard(Long userId, BoardRequestDto boardRequestDto) {
+    public void saveBoard(BoardRequestDto boardRequestDto) {
         // 현재 인증된 사용자 이메일
         String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        // 활성화된 사용자인지 확인
-        User user = userRepository.findByUserIdAndUserStatus(userId, Status.ACTIVE)
+        // 활성화된 사용자인지 이메일로 확인
+        User user = userRepository.findByUserEmailAndUserStatus(loggedInEmail, Status.ACTIVE)
                 .orElseThrow(() -> new UserNotFoundException(ErrorCode.USER_NOT_FOUND));
-        // 게시글 작성자 이메일
-        String boardUserEmail = user.getUserEmail().replaceAll("\\s+", "").trim();
-        validateEmail(loggedInEmail, boardUserEmail);
         Board board = Board.builder()
                 .user(user)
                 .boardTitle(boardRequestDto.getBoardTitle())
@@ -86,7 +83,7 @@ public class BoardService {
 
     // 게시글 수정
     @Transactional
-    public void updateBoard(Long boardId, Long userId, BoardRequestDto boardRequestDto) {
+    public void updateBoard(Long boardId, BoardRequestDto boardRequestDto) {
         // 현재 인증된 사용자 이메일
         String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Board board = boardRepository.findById(boardId)
@@ -114,7 +111,7 @@ public class BoardService {
 
     // 게시글 삭제
     @Transactional
-    public void deleteBoard(Long boardId, Long userId){
+    public void deleteBoard(Long boardId){
         // 인증된 사용자의 권한
         boolean isAdmin = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
@@ -138,8 +135,4 @@ public class BoardService {
         }
     }
 
-    // 빈 문자열과 null을 체크하는 유틸리티 메소드
-    private boolean isNullOrEmpty(String str) {
-        return str == null || str.trim().isEmpty();
-    }
 }

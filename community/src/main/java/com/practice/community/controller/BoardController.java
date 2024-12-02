@@ -23,7 +23,7 @@ public class BoardController {
     @PostMapping("/post/{userId}")
     public ResponseEntity<String> saveBoard(@PathVariable("userId") Long userId,
                                             @Validated(ValidationGroups.Create.class) @RequestBody BoardRequestDto boardRequestDto){
-        boardService.saveBoard(userId, boardRequestDto);
+        boardService.saveBoard(boardRequestDto);
         return ResponseEntity.ok("Post saved");
     }
 
@@ -42,16 +42,15 @@ public class BoardController {
     // 게시글 수정 API
     @PutMapping("/update/{boardId}/{userId}")
     public ResponseEntity<String> updatePost(@PathVariable("boardId") Long boardId,
-                                             @PathVariable("userId") Long userId,
                                              @Validated(ValidationGroups.Update.class) @RequestBody BoardRequestDto boardRequestDto) {
-        boardService.updateBoard(boardId, userId, boardRequestDto);
+        boardService.updateBoard(boardId, boardRequestDto);
         return ResponseEntity.ok("Post Updated");
     }
 
     @DeleteMapping("/delete/{boardId}/{userId}")
     public ResponseEntity<String> deletePost(@PathVariable("boardId") Long boardId,
                                              @PathVariable("userId") Long userId){
-        boardService.deleteBoard(boardId, userId);
+        boardService.deleteBoard(boardId);
         return ResponseEntity.ok("Post Deleted");
     }
 }

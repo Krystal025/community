@@ -30,6 +30,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
         // "Bearer " 부분을 잘라내고 실제 토큰만 추출
         token = token.substring(7);
+
+        String authType = jwtTokenProvider.getAuthType(token);
+        if("social".equals(authType)){
+            filterChain.doFilter(request, response);
+            return;
+        }
         // JWT 토큰 만료 여부 확인
         if (jwtTokenProvider.isExpired(token)) {
             System.out.println("Token Expired");

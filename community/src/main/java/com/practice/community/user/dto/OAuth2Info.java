@@ -1,5 +1,6 @@
 package com.practice.community.user.dto;
 
+import com.practice.community.user.enums.Role;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,5 +12,5 @@ public class OAuth2Info {
      private String provider; // 소셜 제공자
      private String email; // 사용자 이메일
      private String name; // 사용자 이름
-     private String role; // 사용자 권한
+     private Role role; // 사용자 권한
 }

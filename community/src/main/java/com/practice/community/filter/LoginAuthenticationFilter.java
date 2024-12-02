@@ -42,10 +42,8 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         // 로그인 인증과정에서 필요한 (임시)토큰 발급
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 loginRequestDto.getUsername(), loginRequestDto.getPassword());
-        // 로그인용 토큰으로 AuthenticationManager에게 인증 요청
-        Authentication authentication = authenticationManager.authenticate(authToken);
-        // 권한을 포함한 사용자 정보 객체 반환
-        return authentication;
+        // 로그인용 토큰으로 AuthenticationManager에게 인증 요청 후 권한을 포함한 사용자 정보 객체 반환
+        return authenticationManager.authenticate(authToken);
     }
 
     // 인증 성공시 호출되는 메소드

@@ -45,6 +45,11 @@ public class JwtTokenProvider {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
     }
 
+    // JWT 토큰에서 로그인 방식 추출
+    public String getAuthType(String token){
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("authType", String.class);
+    }
+
     // JWT 토큰의 유효기간 추출 및 현재 시간과의 비교를 통한 만료 여부 확인
     public Boolean isExpired(String token){
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
@@ -53,8 +58,9 @@ public class JwtTokenProvider {
     // JWT 토큰 생성 (일반 로그인용)
     public String createJwt(String userEmail, String userRole, Long expireTime){
         return Jwts.builder()
-                .claim("userEmail", userEmail) // 사용자 이메일을 claim(key-value 구조)으로 추가
-                .claim("userRole", userRole) // 사용자 역할을 claim으로 추가
+                .claim("userEmail", userEmail)
+                .claim("userRole", userRole)
+                .claim("authType", "basic")
                 .issuedAt(new Date(System.currentTimeMillis())) // 토큰 발행시점 설정
                 .expiration(new Date(System.currentTimeMillis() + expireTime)) // 토큰 만료시점 설정
                 .signWith(secretKey) // JWT 서명(signature)시 사용할 암호키 지정
@@ -66,11 +72,12 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .claim("socialId", socialId)  // 소셜 로그인에서 얻은 사용자 고유 ID
                 .claim("email", email)
-                .claim("role", role)          // 사용자 역할 (예: ROLE_USER)
-                .issuedAt(new Date(System.currentTimeMillis()))  // 발행 시점
-                .expiration(new Date(System.currentTimeMillis() + expireTime))  // 만료 시점
+                .claim("role", role)
+                .claim("authType", "social")
+                .issuedAt(new Date(System.currentTimeMillis())) // 토큰 발행 시점
+                .expiration(new Date(System.currentTimeMillis() + expireTime)) // 토큰 만료 시점
                 .signWith(secretKey)  // 서명에 사용될 비밀 키
-                .compact();  // JWT 생성
+                .compact(); // JWT 생성
     }
 
 }
