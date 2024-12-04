@@ -30,7 +30,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         }
         // "Bearer " 부분을 잘라내고 실제 토큰만 추출
         token = token.substring(7);
-
+        // 소셜 로그인 사용자는 이 필터가 적용되지 않도록 함
         String authType = jwtTokenProvider.getAuthType(token);
         if("social".equals(authType)){
             filterChain.doFilter(request, response);

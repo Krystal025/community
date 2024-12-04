@@ -3,6 +3,7 @@ package com.practice.community.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.practice.community.user.dto.CustomUserDetails;
 import com.practice.community.user.dto.LoginRequestDto;
+import com.practice.community.util.CookieUtils;
 import com.practice.community.util.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -59,11 +60,15 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         GrantedAuthority auth = iterator.next();
         String userRole = auth.getAuthority();
         // JWT 토큰 생성 (만료시간 : 1시간)
-        String token = jwtTokenProvider.createJwt(userEmail, userRole, 3600000L);
+        String accessToken = jwtTokenProvider.createJwt(userEmail, userRole);
+        String refreshToken = jwtTokenProvider.createRefreshJwt(customUserDetails.getUserId(), "basic");
         // Authorization 필드에 Bearer 접두사를 붙여 토큰을 포함시킨 뒤 HTTP 응답 헤더에 추가
-        response.addHeader("Authorization", "Bearer " + token);
+        response.addHeader("Authorization", "Bearer " + accessToken);
+        // 쿠키에 Refresh 토큰 추가
+        CookieUtils.addCookie(response, refreshToken);
         // 디버깅을 위한 로그 추가
-        System.out.println("Generated Token: " + "Bearer " + token);
+        System.out.println("Generated Token: " + "Bearer " + accessToken);
+        System.out.println("Generated RefreshToken: " + refreshToken);
     }
 
     // 인증 실패시 호출되는 메소드

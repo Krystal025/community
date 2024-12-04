@@ -17,6 +17,7 @@ import java.util.List;
 @Builder
 public class CustomUserDetails implements UserDetails {
 
+    private final Long userId;
     private final String userEmail;
     private final String password;
     private final Role role;
@@ -61,6 +62,7 @@ public class CustomUserDetails implements UserDetails {
     // User 엔티티로부터 CustomUserDetails 생성
     public static CustomUserDetails fromUser(User user) {
         return CustomUserDetails.builder()
+                .userId(user.getUserId())
                 .userEmail(user.getUserEmail())
                 .password(user.getUserPwd())
                 .role(user.getUserRole())

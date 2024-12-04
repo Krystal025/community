@@ -55,6 +55,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .build();
             userRepository.save(user); // 새로운 사용자 DB에 저장
             OAuth2Info oAuth2Info = OAuth2Info.builder()
+                    .userId(user.getUserId())
                     .socialId(socialId)
                     .provider(oAuth2Response.getProvider())
                     .name(oAuth2RequestDto.getUserName())
@@ -79,6 +80,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 userRepository.save(existData); // 수정된 사용자 정보 저장
             }
             OAuth2Info oAuth2Info = OAuth2Info.builder()
+                    .userId(existData.getUserId())
                     .socialId(existData.getSocialId())
                     .provider(existData.getProvider())
                     .name(oAuth2RequestDto.getUserName())

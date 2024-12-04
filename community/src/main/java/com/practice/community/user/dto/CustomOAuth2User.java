@@ -1,5 +1,6 @@
 package com.practice.community.user.dto;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -39,6 +40,10 @@ public class CustomOAuth2User implements OAuth2User {
         return oAuth2Info.getName();
     }
 
+    public Long getUserId(){
+        return oAuth2Info.getUserId();
+    }
+
     // 소셜 로그인에서 제공하는 사용자 고유 ID 반환
     public String getSocialId(){
         return oAuth2Info.getSocialId();
@@ -48,4 +53,5 @@ public class CustomOAuth2User implements OAuth2User {
     public String getEmail(){
         return oAuth2Info.getEmail();
     }
+
 }

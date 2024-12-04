@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class OAuth2Info {
+     private Long userId;
      private String socialId; // 소셜 제공자와 ID를 조합한 고유 식별자
      private String provider; // 소셜 제공자
      private String email; // 사용자 이메일
