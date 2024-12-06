@@ -60,15 +60,15 @@ public class LoginAuthenticationFilter extends UsernamePasswordAuthenticationFil
         GrantedAuthority auth = iterator.next();
         String userRole = auth.getAuthority();
         // JWT 토큰 생성 (만료시간 : 1시간)
-        String accessToken = jwtTokenProvider.createJwt(userEmail, userRole);
+        String accessToken = jwtTokenProvider.createAccessJwt(userEmail, userRole, null);
         String refreshToken = jwtTokenProvider.createRefreshJwt(customUserDetails.getUserId(), "basic");
         // Authorization 필드에 Bearer 접두사를 붙여 토큰을 포함시킨 뒤 HTTP 응답 헤더에 추가
         response.addHeader("Authorization", "Bearer " + accessToken);
         // 쿠키에 Refresh 토큰 추가
-        CookieUtils.addCookie(response, refreshToken);
+        CookieUtils.addCookie(response, "Refresh_Token", refreshToken);
         // 디버깅을 위한 로그 추가
-        System.out.println("Generated Token: " + "Bearer " + accessToken);
-        System.out.println("Generated RefreshToken: " + refreshToken);
+        System.out.println("Generated Access_Token: " + "Bearer " + accessToken);
+        System.out.println("Generated Refresh_Token: " + refreshToken);
     }
 
     // 인증 실패시 호출되는 메소드

@@ -28,30 +28,29 @@ public class CustomOAuth2User implements OAuth2User {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return oAuth2Info.getRole().toString();
+                return oAuth2Info.getUserRole().toString();
             }
         });
         return collection;
     }
 
-    // 사용자 이름
     @Override
     public String getName() {
-        return oAuth2Info.getName();
+        return oAuth2Info.getUserName();
     }
 
     public Long getUserId(){
         return oAuth2Info.getUserId();
     }
 
-    // 소셜 로그인에서 제공하는 사용자 고유 ID 반환
+    public String getUserEmail(){
+        return oAuth2Info.getUserEmail();
+    }
+
     public String getSocialId(){
         return oAuth2Info.getSocialId();
     }
 
-    // 사용자 이메일
-    public String getEmail(){
-        return oAuth2Info.getEmail();
-    }
+
 
 }

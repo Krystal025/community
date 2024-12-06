@@ -19,18 +19,18 @@ public class CustomUserDetails implements UserDetails {
 
     private final Long userId;
     private final String userEmail;
-    private final String password;
-    private final Role role;
+    private final String userPwd;
+    private final Role userRole;
 
     // 사용자에게 부여된 권한(Role) 반환
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(role::name);
+        return List.of(userRole::name);
     }
 
     @Override
     public String getPassword() {
-        return password;
+        return userPwd;
     }
 
     // loadByUsername이 반환한 User 객체에서 사용자 식별자로 사용할 이메일을 반환
@@ -64,8 +64,8 @@ public class CustomUserDetails implements UserDetails {
         return CustomUserDetails.builder()
                 .userId(user.getUserId())
                 .userEmail(user.getUserEmail())
-                .password(user.getUserPwd())
-                .role(user.getUserRole())
+                .userPwd(user.getUserPwd())
+                .userRole(user.getUserRole())
                 .build();
     }
 }

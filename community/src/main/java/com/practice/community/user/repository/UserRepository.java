@@ -3,6 +3,7 @@ package com.practice.community.user.repository;
 import com.practice.community.user.entity.User;
 import com.practice.community.user.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;

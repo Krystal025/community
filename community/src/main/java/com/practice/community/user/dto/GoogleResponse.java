@@ -21,12 +21,12 @@ public class GoogleResponse implements OAuth2Response{
     }
 
     @Override
-    public String getEmail() {
+    public String getUserEmail() {
         return attribute.get("email").toString();
     }
 
     @Override
-    public String getName() {
+    public String getUserName() {
         return attribute.get("name").toString();
     }
 }

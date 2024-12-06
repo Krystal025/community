@@ -29,7 +29,7 @@ public class MainController {
 //        return "redirect:/home"; // 로그인 후 리디렉션할 페이지
 //    }
 
-    @GetMapping("/home")
+    @GetMapping("/login_success")
     public ResponseEntity<String> home() {
         String message = "로그인 성공!";
         System.out.println(message); // 콘솔에 메시지 출력

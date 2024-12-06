@@ -3,10 +3,10 @@ package com.practice.community.filter;
 import com.practice.community.user.dto.CustomOAuth2User;
 import com.practice.community.user.dto.OAuth2Info;
 import com.practice.community.user.enums.Role;
+import com.practice.community.util.CookieUtils;
 import com.practice.community.util.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,40 +24,36 @@ public class OAuth2AuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // Cookie에서 Authorization에 있는 토큰 추출
-//        String token = null;
-//        Cookie[] cookies = request.getCookies();
-//        for (Cookie cookie : cookies) {
-//            System.out.println(cookie.getName());
-//            if (cookie.getName().equals("Authorization")) {
-//                token = cookie.getValue(); // Authorization 쿠키에서 JWT 토큰 추출
-//            }
-//        }
-        String token = request.getHeader("Authorization");
-        // Postman으로 테스트할 때만 사용
-        if(token != null && token.startsWith("Bearer ")){
-            token = token.substring(7);
-        }
-        if(token == null){
-            System.out.println("Token Null");
+        String accessToken = request.getHeader("Authorization");
+        // 토큰 존재여부 확인
+        if (accessToken == null || !accessToken.startsWith("Bearer ")) {
+            System.out.println("Access_Token is Null");
             filterChain.doFilter(request, response);
             return;
         }
-        if(jwtTokenProvider.isExpired(token)){
-            System.out.println("Token Expired");
+        accessToken = accessToken.substring(7);
+        // 토큰 만료여부 확인
+        if(jwtTokenProvider.isExpired(accessToken)){
+            System.out.println("Access_Token is Expired");
+            String refreshToken = CookieUtils.getCookie(request, "Refresh_Token");
+            if(refreshToken != null && !jwtTokenProvider.isExpired(refreshToken)) {
+                String newAccessToken = jwtTokenProvider.refreshAccessToken(refreshToken);
+                response.setHeader("Authorization", "Bearer " + newAccessToken);
+            }
+            // 만료된 토큰을 갱신했을 경우 이전의 만료된 토큰에서 사용자 정보를 추출할 필요가 없기 때문에 return 시킴
             filterChain.doFilter(request, response);
             return;
         }
         // 유효한 토큰일 경우 토큰에서 사용자 정보 추출
-        String socialId = jwtTokenProvider.getSocialId(token);
-        String email = jwtTokenProvider.getEmail(token);
-        String role = jwtTokenProvider.getRole(token);
+        String userEmail = jwtTokenProvider.getUserEmail(accessToken);
+        String userRole = jwtTokenProvider.getUserRole(accessToken);
+        String socialId = jwtTokenProvider.getSocialId(accessToken);
         // 사용자 정보를 OAuth2InfoDto 객체로 생성
         OAuth2Info oAuth2Info = OAuth2Info.builder()
+                .userEmail(userEmail)
+                .userName(userEmail)
+                .userRole(Role.valueOf(userRole))
                 .socialId(socialId)
-                .email(email)
-                .name(email)
-                .role(Role.valueOf(role))
                 .build();
         // 사용자 정보로 CustomOAuth2User 객체 생성 (OAuth2User)
         CustomOAuth2User customOAuth2User = new CustomOAuth2User(oAuth2Info);

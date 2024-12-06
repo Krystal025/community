@@ -38,9 +38,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String socialId = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
         // OAuth2RequestDto로 변환 (DTO에서 검증할 수 있도록 함)
         OAuth2RequestDto oAuth2RequestDto = OAuth2RequestDto.builder()
-                .userName(oAuth2Response.getName())
-                .userEmail(oAuth2Response.getEmail())
-                .userNickname(oAuth2Response.getName())
+                .userName(oAuth2Response.getUserName())
+                .userEmail(oAuth2Response.getUserEmail())
+                .userNickname(oAuth2Response.getUserName())
                 .build();
         // OAuth2 로그인을 통해 사용자 정보를 받아 해당 사용자가 존재하는지 확인
         User existData = userRepository.findBySocialId(socialId);
@@ -56,11 +56,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userRepository.save(user); // 새로운 사용자 DB에 저장
             OAuth2Info oAuth2Info = OAuth2Info.builder()
                     .userId(user.getUserId())
+                    .userName(oAuth2RequestDto.getUserName())
+                    .userEmail(oAuth2RequestDto.getUserEmail())
+                    .userRole(Role.ROLE_USER) // 클라이언트에게 전달한 사용자 Role
                     .socialId(socialId)
                     .provider(oAuth2Response.getProvider())
-                    .name(oAuth2RequestDto.getUserName())
-                    .email(oAuth2RequestDto.getUserEmail())
-                    .role(Role.ROLE_USER) // 클라이언트에게 전달한 사용자 Role
                     .build();
             return new CustomOAuth2User(oAuth2Info); // 인증/인가 작업에 사용될 사용자 정보 객체 반환
         }
@@ -81,11 +81,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             }
             OAuth2Info oAuth2Info = OAuth2Info.builder()
                     .userId(existData.getUserId())
+                    .userName(oAuth2RequestDto.getUserName())
+                    .userEmail(oAuth2RequestDto.getUserEmail())
+                    .userRole(existData.getUserRole())
                     .socialId(existData.getSocialId())
                     .provider(existData.getProvider())
-                    .name(oAuth2RequestDto.getUserName())
-                    .email(oAuth2RequestDto.getUserEmail())
-                    .role(existData.getUserRole())
                     .build();
             return new CustomOAuth2User(oAuth2Info); // 인증/인가 작업에 사용될 사용자 정보 객체 반환
         }
