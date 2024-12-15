@@ -29,22 +29,33 @@
 
 ## 기술 스택
 ---
-### BackEnd
+### 1. Programming Languages
 <div style="display : flex">
     <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=OpenJDK&logoColor=white"/>
-    <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"/>
-    <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"/>
-    <img src="https://img.shields.io/badge/Hibernate-59666C?style=for-the-badge&logo=Hibernate&logoColor=white">
-    <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white"/>
-    <img src="https://img.shields.io/badge/intellijidea-000000?style=for-the-badge&logo=intellijidea&logoColor=white"/> 
 </div>
-<br/>
 
-### Tools
+### 2. Frameworks / Libraries
 <div style="display : flex">
+    <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"/>
+    <img src="https://img.shields.io/badge/Hibernate-59666C?style=for-the-badge&logo=Hibernate&logoColor=white">
+</div>
+
+### 3. Database
+<div style="display : flex">
+    <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"/>
+</div>
+
+### 4. Build & Deployment
+<div style="display : flex">
+    <img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white"> 
+    <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white"/>
+</div>
+
+### 5. Tools
+<div style="display : flex">
+    <img src="https://img.shields.io/badge/intellijidea-000000?style=for-the-badge&logo=intellijidea&logoColor=white"/> 
     <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white"/> 
     <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=gitHub&logoColor=white"/> 
-    <img src="https://img.shields.io/badge/linux-FCC624?style=for-the-badge&logo=linux&logoColor=black"> 
 </div>
 </br>
 
@@ -86,12 +97,13 @@
 
 ## 테스트
 ---
-- API 호출 테스트 (Postman)
-  - 회원가입 및 로그인 : Postman으로 JWT 및 Refresh Token 발급 확인
-  - CRUD 기능 : 게시글 생성, 수정, 삭제, 조회 테스트
-- 소셜 로그인 테스트 (Google OAuth)
-  - 브라우저에서 http://localhost:8080/login 접속 후 Google 로그인 실행
-  - 로그인 성공 시 토큰 발급 및 리디렉션 확인
+### API 호출 테스트 (Postman)
+- 회원가입 및 로그인 : Postman으로 JWT 및 Refresh Token 발급 확인
+- CRUD 기능 : 게시글 생성, 수정, 삭제, 조회 테스트
+
+### 소셜 로그인 테스트 (Google OAuth)
+- 브라우저에서 http://localhost:8080/login 접속 후 Google 로그인 실행
+- 로그인 성공 시 토큰 발급 및 리디렉션 확인
 </br>
 
 
