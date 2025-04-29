@@ -1,9 +1,8 @@
 # Project
 
 ### Community Backend
-- 프로젝트 일정 : 2024/10/31 ~ 
+- 프로젝트 일정 : 2024/10/31 ~ 2024/12/03
 - 개발인원 : BackEnd 1명 
-- GitHub Repository : https://github.com/Krystal025/community
 </br>
 
 ## 프로젝트 개요
@@ -100,12 +99,6 @@
 ### API 호출 테스트 (Postman)
 - 회원가입 및 로그인 : Postman으로 JWT 및 Refresh Token 발급 확인
 - CRUD 기능 : 게시글 생성, 수정, 삭제, 조회 테스트
-
-### 소셜 로그인 테스트 (Google OAuth)
-- 브라우저에서 http://localhost:8080/login 접속 후 Google 로그인 실행
-- 로그인 성공 시 토큰 발급 및 리디렉션 확인
-</br>
-
 
 
 
